@@ -13,6 +13,7 @@ public class ClueModel {
     private Dado dado;
     private Tabuleiro tabuleiro;
     private int indiceJogadorAtual;
+    private List<String> ultimasCasasMapeadas;
 
     public ClueModel() {
         this.envelopeConfidencial = new ArrayList<Carta>();
@@ -21,6 +22,7 @@ public class ClueModel {
         this.dado = new Dado();
         this.tabuleiro = new Tabuleiro();
         this.indiceJogadorAtual = 0;
+        this.ultimasCasasMapeadas = new ArrayList<String>();
     }
 
     private List<Carta> criarSuspeitos() {
@@ -163,6 +165,8 @@ public class ClueModel {
         for (Casa casa : casasAlcancaveis) {
             nomesCasas.add(casa.getNome());
         }
+        
+        this.ultimasCasasMapeadas = nomesCasas;
 
         return nomesCasas;
     }
@@ -232,4 +236,54 @@ public class ClueModel {
     public String getNomeCartaDoJogador(int indiceJogador, int indiceCarta) {
         return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getCartas().get(indiceCarta).getNome();
     }
+    public void posicionarPiaoDaVez(String nomeCasaInicial) {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+        Casa casaInicial = tabuleiro.getCasa(nomeCasaInicial);
+
+        if (casaInicial == null) {
+            throw new IllegalArgumentException("Casa não encontrada: " + nomeCasaInicial);
+        }
+
+        Casa casaAtual = jogadorAtual.getCasaAtual();
+
+        if (casaAtual != null) {
+            casaAtual.desocupar();
+        }
+
+        casaInicial.ocupar();
+        jogadorAtual.setCasaAtual(casaInicial);
+    }
+
+    public void deslocarPiaoDaVez(String nomeCasaDestino) {
+        if (!ultimasCasasMapeadas.contains(nomeCasaDestino)) {
+            throw new IllegalArgumentException("A casa escolhida não está entre as casas alcançáveis.");
+        }
+
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+        Casa destino = tabuleiro.getCasa(nomeCasaDestino);
+
+        if (destino == null) {
+            throw new IllegalArgumentException("Casa não encontrada: " + nomeCasaDestino);
+        }
+
+        Casa casaAtual = jogadorAtual.getCasaAtual();
+
+        if (casaAtual != null) {
+            casaAtual.desocupar();
+        }
+
+        destino.ocupar();
+        jogadorAtual.setCasaAtual(destino);
+    }
+
+    public String getNomeCasaAtualDoJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        if (jogadorAtual.getCasaAtual() == null) {
+            return null;
+        }
+
+        return jogadorAtual.getCasaAtual().getNome();
+    }
+    
 }
