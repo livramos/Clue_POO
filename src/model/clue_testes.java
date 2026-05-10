@@ -45,10 +45,10 @@ public class clue_testes {
         System.out.println("*".repeat(50));
 	}
 	
-	
 	@Test
 	public void todosJogadoresDevemReceberFolhaDeNotas() {
-		System.out.println("JOGADORES DEVEM RECEBER NOTAS\n");
+	    System.out.println("JOGADORES DEVEM RECEBER FOLHA DE NOTAS\n");
+
 	    ClueModel model = new ClueModel();
 
 	    List<String> jogadores = new ArrayList<String>();
@@ -60,23 +60,118 @@ public class clue_testes {
 	    model.prepararJogo(jogadores);
 
 	    for (int i = 0; i < model.getQuantidadeJogadores(); i++) {
-	        FolhaNotas folha = model.getFolhaNotasDoJogador(i);
-	        System.out.println("Jogador " + i + " recebeu folha de notas.");
+	        System.out.println("Jogador " + i + " possui folha de notas: " + model.jogadorTemFolhaNotas(i));
 
-	        System.out.println("Quantidade de suspeitos: " + folha.getSuspeitos().size());
-	        System.out.println("Quantidade de armas: " + folha.getArmas().size());
-	        System.out.println("Quantidade de cômodos: " + folha.getComodos().size());
+	        System.out.println("Quantidade de suspeitos: " + model.getQuantidadeSuspeitosNaFolhaDoJogador(i));
+	        System.out.println("Quantidade de armas: " + model.getQuantidadeArmasNaFolhaDoJogador(i));
+	        System.out.println("Quantidade de cômodos: " + model.getQuantidadeComodosNaFolhaDoJogador(i));
 
-	        assertNotNull(folha);
-	        assertEquals(6, folha.getSuspeitos().size());
-	        assertEquals(6, folha.getArmas().size());
-	        assertEquals(9, folha.getComodos().size());
-	        
-	        System.out.println("\n");
-	        System.out.println("*".repeat(50));
+	        assertTrue(model.jogadorTemFolhaNotas(i));
+	        assertEquals(6, model.getQuantidadeSuspeitosNaFolhaDoJogador(i));
+	        assertEquals(6, model.getQuantidadeArmasNaFolhaDoJogador(i));
+	        assertEquals(9, model.getQuantidadeComodosNaFolhaDoJogador(i));
+
+	        System.out.println();
+	        System.out.println("*".repeat(51));
 	    }
 	}
 
+	@Test
+	public void cartaDeveComecarDesmarcadaNaFolhaDoJogador() {
+	    System.out.println("CARTA DEVE COMEÇAR DESMARCADA NA FOLHA\n");
+
+	    ClueModel model = new ClueModel();
+
+	    List<String> jogadores = new ArrayList<String>();
+	    jogadores.add("Coronel Mostarda");
+	    jogadores.add("Dona Branca");
+	    jogadores.add("Srta. Scarlet");
+	    jogadores.add("Professor Black");
+
+	    model.prepararJogo(jogadores);
+
+	    boolean marcada = model.cartaEstaMarcadaNaFolhaDoJogador(0, "Corda");
+
+	    System.out.println("Carta Corda está marcada inicialmente: " + marcada);
+
+	    assertFalse(marcada);
+
+	    System.out.println("*".repeat(51));
+	}
+	
+	@Test
+	public void deveMarcarCartaNaFolhaDoJogador() {
+	    System.out.println("DEVE MARCAR CARTA NA FOLHA DO JOGADOR\n");
+
+	    ClueModel model = new ClueModel();
+
+	    List<String> jogadores = new ArrayList<String>();
+	    jogadores.add("Coronel Mostarda");
+	    jogadores.add("Dona Branca");
+	    jogadores.add("Srta. Scarlet");
+	    jogadores.add("Professor Black");
+
+	    model.prepararJogo(jogadores);
+
+	    System.out.println("Antes de marcar Corda: " + model.cartaEstaMarcadaNaFolhaDoJogador(0, "Corda"));
+
+	    model.marcarCartaNaFolhaDoJogador(0, "Corda");
+
+	    System.out.println("Depois de marcar Corda: " + model.cartaEstaMarcadaNaFolhaDoJogador(0, "Corda"));
+
+	    assertTrue(model.cartaEstaMarcadaNaFolhaDoJogador(0, "Corda"));
+
+	    System.out.println("*".repeat(51));
+	}
+	
+	@Test
+	public void marcarCartaEmUmJogadorNaoDeveMarcarNaFolhaDosOutros() {
+	    System.out.println("MARCAR CARTA EM UM JOGADOR NÃO DEVE MARCAR NOS OUTROS\n");
+
+	    ClueModel model = new ClueModel();
+
+	    List<String> jogadores = new ArrayList<String>();
+	    jogadores.add("Coronel Mostarda");
+	    jogadores.add("Dona Branca");
+	    jogadores.add("Srta. Scarlet");
+	    jogadores.add("Professor Black");
+
+	    model.prepararJogo(jogadores);
+
+	    model.marcarCartaNaFolhaDoJogador(0, "Corda");
+
+	    System.out.println("Jogador 0 - Corda marcada: " + model.cartaEstaMarcadaNaFolhaDoJogador(0, "Corda"));
+	    System.out.println("Jogador 1 - Corda marcada: " + model.cartaEstaMarcadaNaFolhaDoJogador(1, "Corda"));
+	    System.out.println("Jogador 2 - Corda marcada: " + model.cartaEstaMarcadaNaFolhaDoJogador(2, "Corda"));
+	    System.out.println("Jogador 3 - Corda marcada: " + model.cartaEstaMarcadaNaFolhaDoJogador(3, "Corda"));
+
+	    assertTrue(model.cartaEstaMarcadaNaFolhaDoJogador(0, "Corda"));
+	    assertFalse(model.cartaEstaMarcadaNaFolhaDoJogador(1, "Corda"));
+	    assertFalse(model.cartaEstaMarcadaNaFolhaDoJogador(2, "Corda"));
+	    assertFalse(model.cartaEstaMarcadaNaFolhaDoJogador(3, "Corda"));
+
+	    System.out.println("*".repeat(51));
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void naoDeveMarcarCartaInexistenteNaFolha() {
+	    System.out.println("NÃO DEVE MARCAR CARTA INEXISTENTE NA FOLHA\n");
+
+	    ClueModel model = new ClueModel();
+
+	    List<String> jogadores = new ArrayList<String>();
+	    jogadores.add("Coronel Mostarda");
+	    jogadores.add("Dona Branca");
+	    jogadores.add("Srta. Scarlet");
+	    jogadores.add("Professor Black");
+
+	    model.prepararJogo(jogadores);
+
+	    System.out.println("Tentando marcar carta inexistente: Espada");
+
+	    model.marcarCartaNaFolhaDoJogador(0, "Espada");
+	}
+	
 	    @Test
 	    public void casaDeveAdicionarVizinha() {
 	    	System.out.println("TESTE CASA DEVE ADICIONAR VIZINHA\n");

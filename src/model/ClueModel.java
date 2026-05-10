@@ -196,13 +196,33 @@ public class ClueModel {
     public int getQuantidadeJogadores() {
         return jogadoresEmOrdemDaEsquerda.size();
     }
+    
+    public boolean jogadorTemFolhaNotas(int indiceJogador) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getFolhaNotas() != null;
+    }
 
     public int getQuantidadeCartasDoJogador(int indiceJogador) {
         return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getCartas().size();
     }
     
-    public FolhaNotas getFolhaNotasDoJogador(int indice) {
-        return jogadoresEmOrdemDaEsquerda.get(indice).getFolhaNotas();
+    public int getQuantidadeSuspeitosNaFolhaDoJogador(int indiceJogador) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getFolhaNotas().getSuspeitos().size();
+    }
+
+    public int getQuantidadeComodosNaFolhaDoJogador(int indiceJogador) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getFolhaNotas().getComodos().size();
+    }
+
+    public int getQuantidadeArmasNaFolhaDoJogador(int indiceJogador) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getFolhaNotas().getArmas().size();
+    }
+
+    public void marcarCartaNaFolhaDoJogador(int indiceJogador, String nomeCarta) {
+        jogadoresEmOrdemDaEsquerda.get(indiceJogador).getFolhaNotas().marcarCarta(nomeCarta);
+    }
+
+    public boolean cartaEstaMarcadaNaFolhaDoJogador(int indiceJogador, String nomeCarta) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getFolhaNotas().cartaEstaMarcada(nomeCarta);
     }
 
     public String getNomeCartaEnvelope(int indice) {
