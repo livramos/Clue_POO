@@ -2,80 +2,89 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClueModel {
-	private List<Carta> envelopeConfidencial;
-	private List<Jogador> jogadores;
-	private Dado dado;
-	
-	public ClueModel() {
-	this.envelopeConfidencial = new ArrayList<>();
-    this.jogadores = new ArrayList<>();
-    this.dado = new Dado();
-	}
-	
-	private List<Carta> criarSuspeitos() {
+    private List<Carta> envelopeConfidencial;
+    private List<Jogador> jogadoresEmOrdemDaEsquerda;
+    private Map<String, Jogador> jogadoresPorNome;
+    private Dado dado;
+    private Tabuleiro tabuleiro;
+    private int indiceJogadorAtual;
 
-		List<Carta> suspeitos = new ArrayList<>();
+    public ClueModel() {
+        this.envelopeConfidencial = new ArrayList<Carta>();
+        this.jogadoresEmOrdemDaEsquerda = new ArrayList<Jogador>();
+        this.jogadoresPorNome = new HashMap<String, Jogador>();
+        this.dado = new Dado();
+        this.tabuleiro = new Tabuleiro();
+        this.indiceJogadorAtual = 0;
+    }
 
-	    suspeitos.add(new Carta("Srta. Scarlet", TipoCarta.SUSPEITO));
-	    suspeitos.add(new Carta("Coronel Mostarda", TipoCarta.SUSPEITO));
-	    suspeitos.add(new Carta("Sra. White", TipoCarta.SUSPEITO));
-	    suspeitos.add(new Carta("Sr. Green", TipoCarta.SUSPEITO));
-	    suspeitos.add(new Carta("Sra. Peacock", TipoCarta.SUSPEITO));
-	    suspeitos.add(new Carta("Professor Plum", TipoCarta.SUSPEITO));
+    private List<Carta> criarSuspeitos() {
+        List<Carta> suspeitos = new ArrayList<Carta>();
 
-	    return suspeitos;
-	}
-	
-	private List<Carta> criarComodos() {
+        suspeitos.add(new Carta("Srta. Scarlet", TipoCarta.SUSPEITO));
+        suspeitos.add(new Carta("Coronel Mostarda", TipoCarta.SUSPEITO));
+        suspeitos.add(new Carta("Sra. White", TipoCarta.SUSPEITO));
+        suspeitos.add(new Carta("Sr. Green", TipoCarta.SUSPEITO));
+        suspeitos.add(new Carta("Sra. Peacock", TipoCarta.SUSPEITO));
+        suspeitos.add(new Carta("Professor Plum", TipoCarta.SUSPEITO));
 
-	    List<Carta> comodos = new ArrayList<>();
+        return suspeitos;
+    }
 
-	    comodos.add(new Carta("Cozinha", TipoCarta.COMODO));
-	    comodos.add(new Carta("Salão de Baile", TipoCarta.COMODO));
-	    comodos.add(new Carta("Jardim de Inverno", TipoCarta.COMODO));
-	    comodos.add(new Carta("Sala de Jantar", TipoCarta.COMODO));
-	    comodos.add(new Carta("Sala de Bilhar", TipoCarta.COMODO));
-	    comodos.add(new Carta("Adega", TipoCarta.COMODO));
-	    comodos.add(new Carta("Sala de Estar", TipoCarta.COMODO));
-	    comodos.add(new Carta("Hall de Entrada", TipoCarta.COMODO));
-	    comodos.add(new Carta("Biblioteca", TipoCarta.COMODO));
+    private List<Carta> criarComodos() {
+        List<Carta> comodos = new ArrayList<Carta>();
 
-	    return comodos;
-	}
+        comodos.add(new Carta("Cozinha", TipoCarta.COMODO));
+        comodos.add(new Carta("Salão de Baile", TipoCarta.COMODO));
+        comodos.add(new Carta("Jardim de Inverno", TipoCarta.COMODO));
+        comodos.add(new Carta("Sala de Jantar", TipoCarta.COMODO));
+        comodos.add(new Carta("Sala de Bilhar", TipoCarta.COMODO));
+        comodos.add(new Carta("Adega", TipoCarta.COMODO));
+        comodos.add(new Carta("Sala de Estar", TipoCarta.COMODO));
+        comodos.add(new Carta("Hall de Entrada", TipoCarta.COMODO));
+        comodos.add(new Carta("Biblioteca", TipoCarta.COMODO));
 
-	private List<Carta> criarArmas() {
+        return comodos;
+    }
 
-	    List<Carta> armas = new ArrayList<>();
+    private List<Carta> criarArmas() {
+        List<Carta> armas = new ArrayList<Carta>();
 
-	    armas.add(new Carta("Corda", TipoCarta.ARMA));
-	    armas.add(new Carta("Cano de Chumbo", TipoCarta.ARMA));
-	    armas.add(new Carta("Faca", TipoCarta.ARMA));
-	    armas.add(new Carta("Chave Inglesa", TipoCarta.ARMA));
-	    armas.add(new Carta("Castiçal", TipoCarta.ARMA));
-	    armas.add(new Carta("Revólver", TipoCarta.ARMA));
+        armas.add(new Carta("Corda", TipoCarta.ARMA));
+        armas.add(new Carta("Cano de Chumbo", TipoCarta.ARMA));
+        armas.add(new Carta("Faca", TipoCarta.ARMA));
+        armas.add(new Carta("Chave Inglesa", TipoCarta.ARMA));
+        armas.add(new Carta("Castiçal", TipoCarta.ARMA));
+        armas.add(new Carta("Revólver", TipoCarta.ARMA));
 
-	    return armas;
-	}
-	
-	public void prepararJogo(int quantidadeJogadores) {
-		List<Carta> suspeitos = criarSuspeitos();
-	    List<Carta> comodos = criarComodos();
-	    List<Carta> armas = criarArmas();
+        return armas;
+    }
 
-	    Collections.shuffle(suspeitos);
-	    Collections.shuffle(comodos);
-	    Collections.shuffle(armas);
-	    
-	    envelopeConfidencial.clear();
+    public void prepararJogo(List<String> nomesJogadoresEmOrdemDaEsquerda) {
+        if (nomesJogadoresEmOrdemDaEsquerda == null || nomesJogadoresEmOrdemDaEsquerda.size() < 3) {
+            throw new IllegalArgumentException("O jogo precisa de pelo menos 3 jogadores.");
+        }
 
-	    envelopeConfidencial.add(suspeitos.remove(0));
-	    envelopeConfidencial.add(comodos.remove(0));
-	    envelopeConfidencial.add(armas.remove(0));
-		
-	    List<Carta> cartasRestantes = new ArrayList<>();
+        List<Carta> suspeitos = criarSuspeitos();
+        List<Carta> comodos = criarComodos();
+        List<Carta> armas = criarArmas();
+
+        Collections.shuffle(suspeitos);
+        Collections.shuffle(comodos);
+        Collections.shuffle(armas);
+
+        envelopeConfidencial.clear();
+
+        envelopeConfidencial.add(suspeitos.remove(0));
+        envelopeConfidencial.add(comodos.remove(0));
+        envelopeConfidencial.add(armas.remove(0));
+
+        List<Carta> cartasRestantes = new ArrayList<Carta>();
 
         cartasRestantes.addAll(suspeitos);
         cartasRestantes.addAll(comodos);
@@ -83,35 +92,114 @@ public class ClueModel {
 
         Collections.shuffle(cartasRestantes);
 
-        jogadores.clear();
+        jogadoresEmOrdemDaEsquerda.clear();
+        jogadoresPorNome.clear();
 
-        for (int i = 0; i < quantidadeJogadores; i++) {
-            jogadores.add(new Jogador("Jogador " + (i + 1)));
+        for (String nome : nomesJogadoresEmOrdemDaEsquerda) {
+            Jogador jogador = new Jogador(nome);
+            jogadoresEmOrdemDaEsquerda.add(jogador);
+            jogadoresPorNome.put(nome, jogador);
         }
 
         for (int i = 0; i < cartasRestantes.size(); i++) {
-            int jogadorAtual = i % quantidadeJogadores;
-            jogadores.get(jogadorAtual).receberCarta(cartasRestantes.get(i));
+            int jogadorAtual = i % jogadoresEmOrdemDaEsquerda.size();
+            jogadoresEmOrdemDaEsquerda.get(jogadorAtual).receberCarta(cartasRestantes.get(i));
         }
-	}
-	
-	public int[] lancarDados() {
-		int dado1 = dado.rolar();
-		int dado2 = dado.rolar();
-		
-		return new int[] { dado1, dado2 };
-	}
-	
-	public int getQuantidadeCartasEnvelope() {
-	    return envelopeConfidencial.size();
-	}
 
-	public int getQuantidadeJogadores() {
-	    return jogadores.size();
-	}
+        indiceJogadorAtual = encontrarIndiceScarlet();
+    }
 
-	public int getQuantidadeCartasDoJogador(int indiceJogador) {
-	    return jogadores.get(indiceJogador).getCartas().size();
-	}
-	
+    private int encontrarIndiceScarlet() {
+        for (int i = 0; i < jogadoresEmOrdemDaEsquerda.size(); i++) {
+            if (jogadoresEmOrdemDaEsquerda.get(i).getNome().equalsIgnoreCase("Srta. Scarlet")) {
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Srta. Scarlet precisa estar na lista de jogadores.");
+    }
+
+    public String getNomeJogadorAtual() {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual).getNome();
+    }
+
+    public void passarTurno() {
+        indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadoresEmOrdemDaEsquerda.size();
+    }
+
+    public int[] lancarDados() {
+        int dado1 = dado.rolar();
+        int dado2 = dado.rolar();
+
+        return new int[] { dado1, dado2 };
+    }
+
+    public void adicionarCasaAoTabuleiro(String nomeCasa) {
+        tabuleiro.adicionarCasa(new Casa(nomeCasa));
+    }
+
+    public void conectarCasas(String nomeCasa1, String nomeCasa2) {
+        tabuleiro.conectarCasas(nomeCasa1, nomeCasa2);
+    }
+
+    public List<String> mapearCasas(String nomeCasaInicial, int[] valoresDados) {
+        int totalDados = valoresDados[0] + valoresDados[1];
+
+        Casa casaInicial = tabuleiro.getCasa(nomeCasaInicial);
+
+        if (casaInicial == null) {
+            throw new IllegalArgumentException("Casa inicial não encontrada: " + nomeCasaInicial);
+        }
+
+        List<Casa> casasAlcancaveis = tabuleiro.mapearCasasAlcancaveis(casaInicial, totalDados);
+        List<String> nomesCasas = new ArrayList<String>();
+
+        for (Casa casa : casasAlcancaveis) {
+            nomesCasas.add(casa.getNome());
+        }
+
+        return nomesCasas;
+    }
+
+    public void deslocarPiao(String nomeJogador, String nomeCasaDestino) {
+        Jogador jogador = jogadoresPorNome.get(nomeJogador);
+        Casa destino = tabuleiro.getCasa(nomeCasaDestino);
+
+        if (jogador == null) {
+            throw new IllegalArgumentException("Jogador não encontrado: " + nomeJogador);
+        }
+
+        if (destino == null) {
+            throw new IllegalArgumentException("Casa não encontrada: " + nomeCasaDestino);
+        }
+
+        Casa casaAtual = jogador.getCasaAtual();
+
+        if (casaAtual != null) {
+            casaAtual.desocupar();
+        }
+
+        destino.ocupar();
+        jogador.setCasaAtual(destino);
+    }
+
+    public int getQuantidadeCartasEnvelope() {
+        return envelopeConfidencial.size();
+    }
+
+    public int getQuantidadeJogadores() {
+        return jogadoresEmOrdemDaEsquerda.size();
+    }
+
+    public int getQuantidadeCartasDoJogador(int indiceJogador) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getCartas().size();
+    }
+
+    public String getNomeCartaEnvelope(int indice) {
+        return envelopeConfidencial.get(indice).getNome();
+    }
+
+    public String getNomeCartaDoJogador(int indiceJogador, int indiceCarta) {
+        return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getCartas().get(indiceCarta).getNome();
+    }
 }

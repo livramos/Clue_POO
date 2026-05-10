@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Jogador {
-	private String nome;
-	private List<Carta> cartas;
-	
-	Jogador(String nome){
-		this.nome = nome;
-		this.cartas = new ArrayList<>();
-	}
-	
-	void receberCarta(Carta carta) {
+    private String nome;
+    private List<Carta> cartas;
+    private Casa casaAtual;
+
+    Jogador(String nome) {
+        this.nome = nome;
+        this.cartas = new ArrayList<Carta>();
+        this.casaAtual = null;
+    }
+
+    void receberCarta(Carta carta) {
         cartas.add(carta);
     }
 
@@ -22,5 +24,13 @@ class Jogador {
 
     List<Carta> getCartas() {
         return cartas;
+    }
+
+    Casa getCasaAtual() {
+        return casaAtual;
+    }
+
+    void setCasaAtual(Casa casaAtual) {
+        this.casaAtual = casaAtual;
     }
 }
