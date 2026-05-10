@@ -77,7 +77,11 @@ public class ClueModel {
         Collections.shuffle(suspeitos);
         Collections.shuffle(comodos);
         Collections.shuffle(armas);
-
+        
+        List<Carta> todosSuspeitos = new ArrayList<Carta>(suspeitos);
+        List<Carta> todosComodos = new ArrayList<Carta>(comodos);
+        List<Carta> todasArmas = new ArrayList<Carta>(armas);
+        
         envelopeConfidencial.clear();
 
         envelopeConfidencial.add(suspeitos.remove(0));
@@ -97,6 +101,8 @@ public class ClueModel {
 
         for (String nome : nomesJogadoresEmOrdemDaEsquerda) {
             Jogador jogador = new Jogador(nome);
+            jogador.receberFolha(new FolhaNotas(todosSuspeitos, todosComodos, todasArmas));
+
             jogadoresEmOrdemDaEsquerda.add(jogador);
             jogadoresPorNome.put(nome, jogador);
         }
@@ -193,6 +199,10 @@ public class ClueModel {
 
     public int getQuantidadeCartasDoJogador(int indiceJogador) {
         return jogadoresEmOrdemDaEsquerda.get(indiceJogador).getCartas().size();
+    }
+    
+    public FolhaNotas getFolhaNotasDoJogador(int indice) {
+        return jogadoresEmOrdemDaEsquerda.get(indice).getFolhaNotas();
     }
 
     public String getNomeCartaEnvelope(int indice) {
