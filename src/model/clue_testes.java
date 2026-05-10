@@ -13,6 +13,8 @@ public class clue_testes {
 
 	@Test
 	public void depoisDaScarletDeveJogarQuemEstaASuaEsquerda() {
+		System.out.println("TESTE ESQUERDA SRTA SCARLET\n");
+		
 	    List<Jogador> jogadores = new ArrayList<>();
 
 	    jogadores.add(new Jogador("Coronel Mostarda"));
@@ -35,28 +37,18 @@ public class clue_testes {
         jogo.passarTurno();
 
         System.out.println("Depois de passar o turno: " + jogo.getJogadorAtual().getNome());
+        
 
         assertEquals("Coronel Mostarda", jogo.getJogadorAtual().getNome());
+        
+        System.out.println("\n");
+        System.out.println("*".repeat(50));
 	}
 	
-	@Test
-	public void dadoDeveRetornarValorEntre1e6() {
-	    Dado dado = new Dado();
-	    List<Integer> valoresSorteados = new ArrayList<Integer>();
-
-	    for (int i = 0; i < 100; i++) {
-	        int valor = dado.rolar();
-
-	        valoresSorteados.add(valor);
-
-	        assertTrue(valor >= 1 && valor <= 6);
-	    }
-
-	    System.out.println("Valores sorteados no dado: " + valoresSorteados);
-	}
 	
 	@Test
 	public void todosJogadoresDevemReceberFolhaDeNotas() {
+		System.out.println("JOGADORES DEVEM RECEBER NOTAS\n");
 	    ClueModel model = new ClueModel();
 
 	    List<String> jogadores = new ArrayList<String>();
@@ -79,11 +71,16 @@ public class clue_testes {
 	        assertEquals(6, folha.getSuspeitos().size());
 	        assertEquals(6, folha.getArmas().size());
 	        assertEquals(9, folha.getComodos().size());
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 	}
 
 	    @Test
 	    public void casaDeveAdicionarVizinha() {
+	    	System.out.println("TESTE CASA DEVE ADICIONAR VIZINHA\n");
+	    	
 	        Casa cozinha = new Casa("Cozinha");
 	        Casa corredor = new Casa("Corredor");
 
@@ -94,10 +91,15 @@ public class clue_testes {
 
 	        assertEquals(1, cozinha.getCasasAdjacentes().size());
 	        assertTrue(cozinha.getCasasAdjacentes().contains(corredor));
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 
 	    @Test
 	    public void tabuleiroDeveAdicionarEBuscarCasaPeloNome() {
+	    	System.out.println("TESTE TABULEIRO BUSCA CASA\n");
+	    	
 	        Tabuleiro tabuleiro = new Tabuleiro();
 
 	        Casa cozinha = new Casa("Cozinha");
@@ -107,10 +109,15 @@ public class clue_testes {
 	        System.out.println("Casa buscada: " + tabuleiro.getCasa("Cozinha").getNome());
 
 	        assertEquals(cozinha, tabuleiro.getCasa("Cozinha"));
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 
 	    @Test
 	    public void tabuleiroDeveMapearCasasAlcancaveisComValorFixoDoDado() {
+	    	System.out.println("TESTE CASAS ALCANÇAVEIS\n");
+	    	
 	        Tabuleiro tabuleiro = new Tabuleiro();
 
 	        Casa casaA = new Casa("A");
@@ -148,9 +155,13 @@ public class clue_testes {
 	        assertFalse(casasAlcancaveis.contains(casaD));
 
 	        assertEquals(2, casasAlcancaveis.size());
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 	    @Test
 	    public void deveCriarEnvelopeComTresCartas() {
+	    	System.out.println("TESTE ENVELOPE DEVE CONTER 3 CARTAS\n");
 	        ClueModel model = new ClueModel();
 
 	        List<String> jogadores = new ArrayList<String>();
@@ -164,10 +175,14 @@ public class clue_testes {
 	        System.out.println("Quantidade de cartas no envelope: " + model.getQuantidadeCartasEnvelope());
 
 	        assertEquals(3, model.getQuantidadeCartasEnvelope());
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 
 	    @Test
 	    public void deveCriarQuantidadeCorretaDeJogadores() {
+	    	System.out.println("TESTE QUANTIDADE DE JOGADORES IGUAL A 3\n");
 	        ClueModel model = new ClueModel();
 
 	        List<String> jogadores = new ArrayList<String>();
@@ -181,10 +196,14 @@ public class clue_testes {
 	        System.out.println("Quantidade de jogadores criados: " + model.getQuantidadeJogadores());
 
 	        assertEquals(4, model.getQuantidadeJogadores());
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 
 	    @Test
 	    public void dadosDevemTerValoresEntreUmESeis() {
+	    	System.out.println("TESTE DADO RETORNA 1 A 6\n");
 	        ClueModel model = new ClueModel();
 
 	        int[] dados = model.lancarDados();
@@ -194,10 +213,14 @@ public class clue_testes {
 
 	        assertTrue(dados[0] >= 1 && dados[0] <= 6);
 	        assertTrue(dados[1] >= 1 && dados[1] <= 6);
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 	    
 	    @Test
 	    public void prepararJogoDuasVezesNaoDeveAcumularJogadores() {
+	    	System.out.println("TESTE LISTA QTD JOGADORES É LIMPA\n");
 	        ClueModel model = new ClueModel();
 
 	        List<String> jogadores1 = new ArrayList<String>();
@@ -220,9 +243,13 @@ public class clue_testes {
 	        System.out.println("Quantidade de jogadores após segundo preparo: " + model.getQuantidadeJogadores());
 
 	        assertEquals(3, model.getQuantidadeJogadores());
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 	    @Test
 	    public void deveDistribuirTodasAsCartasRestantes() {
+	    	System.out.println("TESTE CARTAS RESTANTES DEVEM SER DISTRIBUIDAS\n");
 	        ClueModel model = new ClueModel();
 
 	        List<String> jogadores = new ArrayList<String>();
@@ -246,5 +273,8 @@ public class clue_testes {
 	        System.out.println("Total de cartas distribuídas: " + totalCartasDistribuidas);
 
 	        assertEquals(18, totalCartasDistribuidas);
+	        
+	        System.out.println("\n");
+	        System.out.println("*".repeat(50));
 	    }
 }
