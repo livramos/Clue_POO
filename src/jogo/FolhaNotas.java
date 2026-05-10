@@ -29,7 +29,7 @@ public class FolhaNotas {
         
         comodos = new ArrayList<>();
         comodos.add("Corredor");
-        comodos.add("Salão de Estar");
+        comodos.add("Sala de Estar");
         comodos.add("Sala de Jantar");
         comodos.add("Cozinha");
         comodos.add("Salão de Baile");
