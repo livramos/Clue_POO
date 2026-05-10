@@ -54,6 +54,33 @@ public class clue_testes {
 
 	    System.out.println("Valores sorteados no dado: " + valoresSorteados);
 	}
+	
+	@Test
+	public void todosJogadoresDevemReceberFolhaDeNotas() {
+	    ClueModel model = new ClueModel();
+
+	    List<String> jogadores = new ArrayList<String>();
+	    jogadores.add("Coronel Mostarda");
+	    jogadores.add("Dona Branca");
+	    jogadores.add("Srta. Scarlet");
+	    jogadores.add("Professor Black");
+
+	    model.prepararJogo(jogadores);
+
+	    for (int i = 0; i < model.getQuantidadeJogadores(); i++) {
+	        FolhaNotas folha = model.getFolhaNotasDoJogador(i);
+	        System.out.println("Jogador " + i + " recebeu folha de notas.");
+
+	        System.out.println("Quantidade de suspeitos: " + folha.getSuspeitos().size());
+	        System.out.println("Quantidade de armas: " + folha.getArmas().size());
+	        System.out.println("Quantidade de cômodos: " + folha.getComodos().size());
+
+	        assertNotNull(folha);
+	        assertEquals(6, folha.getSuspeitos().size());
+	        assertEquals(6, folha.getArmas().size());
+	        assertEquals(9, folha.getComodos().size());
+	    }
+	}
 
 	    @Test
 	    public void casaDeveAdicionarVizinha() {
