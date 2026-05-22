@@ -89,6 +89,7 @@ public class ClueModel {
         envelopeConfidencial.add(suspeitos.remove(0));
         envelopeConfidencial.add(comodos.remove(0));
         envelopeConfidencial.add(armas.remove(0));
+        
 
         List<Carta> cartasRestantes = new ArrayList<Carta>();
 
@@ -132,7 +133,11 @@ public class ClueModel {
     }
 
     public void passarTurno() {
-        indiceJogadorAtual = (indiceJogadorAtual + 1) % jogadoresEmOrdemDaEsquerda.size();
+        indiceJogadorAtual = indiceJogadorAtual + 1;
+
+        if (indiceJogadorAtual >= jogadoresEmOrdemDaEsquerda.size()) {
+            indiceJogadorAtual = 0;
+        }
     }
 
     public int[] lancarDados() {

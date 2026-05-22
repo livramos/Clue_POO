@@ -480,5 +480,6 @@ public class clue_testes {
 	        System.out.println("Tentando mover para B sem chamar mapearCasas antes.");
 
 	        model.deslocarPiaoDaVez("B");
+	        System.out.println("\n");
 	    }
 }
