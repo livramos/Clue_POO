@@ -291,4 +291,49 @@ public class ClueModel {
         return jogadorAtual.getCasaAtual().getNome();
     }
     
+    public void adicionarPassagemSecreta(String origem, String destino) {
+        tabuleiro.adicionarPassagemSecreta(origem, destino);
+    }
+
+    public boolean jogadorDaVezTemPassagemSecreta() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        if (jogadorAtual.getCasaAtual() == null) {
+            return false;
+        }
+
+        return tabuleiro.temPassagemSecreta(jogadorAtual.getCasaAtual().getNome());
+    }
+
+    public String getDestinoPassagemSecretaDoJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        if (jogadorAtual.getCasaAtual() == null) {
+            return null;
+        }
+
+        return tabuleiro.getDestinoPassagemSecreta(jogadorAtual.getCasaAtual().getNome());
+    }
+
+    public void usarPassagemSecretaJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        if (jogadorAtual.getCasaAtual() == null) {
+            throw new IllegalArgumentException("O jogador da vez não está em nenhuma casa.");
+        }
+
+        String nomeCasaAtual = jogadorAtual.getCasaAtual().getNome();
+
+        if (!tabuleiro.temPassagemSecreta(nomeCasaAtual)) {
+            throw new IllegalArgumentException("A casa atual não possui passagem secreta.");
+        }
+
+        String nomeDestino = tabuleiro.getDestinoPassagemSecreta(nomeCasaAtual);
+        Casa destino = tabuleiro.getCasa(nomeDestino);
+
+        jogadorAtual.getCasaAtual().desocupar();
+        destino.ocupar();
+        jogadorAtual.setCasaAtual(destino);
+    }
+    
 }
