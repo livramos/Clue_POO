@@ -70,11 +70,13 @@ class Tabuleiro {
             Casa casaAtual = atual.getCasa();
             int distanciaAtual = atual.getDistancia();
 
-            if (distanciaAtual > 0) {
+            boolean ehComodo = casaAtual.getNome().startsWith("COMODO_");
+
+            if (distanciaAtual == valorDados || (distanciaAtual > 0 && ehComodo)) {
                 casasAlcancaveis.add(casaAtual);
             }
 
-            if (distanciaAtual < valorDados) {
+            if (distanciaAtual < valorDados && !(distanciaAtual > 0 && ehComodo)) {
                 for (Casa adjacente : casaAtual.getCasasAdjacentes()) {
                     if (!casasVisitadas.contains(adjacente) && !adjacente.estaOcupada()) {
                         casasVisitadas.add(adjacente);

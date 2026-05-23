@@ -9,12 +9,16 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import model.ClueFacade;
+
 public class PainelLateral extends JPanel {
+
     private JButton botaoPassagemSecreta;
     private JButton botaoProximo;
     private JButton botaoMostrarCartas;
@@ -30,20 +34,40 @@ public class PainelLateral extends JPanel {
     private String jogadorDaVez;
     private int dado1;
     private int dado2;
+    private boolean dadosJaLancados;
+
+    private PainelTabuleiro painelTabuleiro;
 
     public PainelLateral() {
         setPreferredSize(new Dimension(220, 900));
         setBackground(Color.LIGHT_GRAY);
         setLayout(null);
 
-        jogadorDaVez = "Miss. Scarlet";
+        jogadorDaVez = ClueFacade.getInstancia().getJogadorAtual();
         dado1 = 1;
         dado2 = 1;
+        dadosJaLancados = false;
 
         carregarImagens();
         criarBotoes();
         posicionarBotoes();
         configurarEventos();
+        atualizarEstadoPassagemSecreta();
+    }
+
+    public void setPainelTabuleiro(PainelTabuleiro painelTabuleiro) {
+        this.painelTabuleiro = painelTabuleiro;
+    }
+
+    public void onMovimentoConcluido() {
+        dadosJaLancados = false;
+
+        botaoJogarDados.setEnabled(false);
+        botaoProximo.setEnabled(true);
+
+        atualizarEstadoPassagemSecreta();
+
+        repaint();
     }
 
     private void carregarImagens() {
@@ -71,6 +95,7 @@ public class PainelLateral extends JPanel {
         botaoProximo.setEnabled(false);
         botaoPalpite.setEnabled(false);
         botaoAcusar.setEnabled(false);
+        botaoEscolherDados.setEnabled(false);
     }
 
     private void posicionarBotoes() {
@@ -102,13 +127,97 @@ public class PainelLateral extends JPanel {
                 jogarDados();
             }
         });
+
+        botaoProximo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                passarTurno();
+            }
+        });
+
+        botaoPassagemSecreta.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                usarPassagemSecreta();
+            }
+        });
     }
 
     private void jogarDados() {
-        dado1 = (int) (Math.random() * 6) + 1;
-        dado2 = (int) (Math.random() * 6) + 1;
+        if (dadosJaLancados) {
+            return;
+        }
+
+        ClueFacade facade = ClueFacade.getInstancia();
+
+        int[] resultado = facade.lancarDados();
+
+        dado1 = resultado[0];
+        dado2 = resultado[1];
+        dadosJaLancados = true;
+
+        botaoJogarDados.setEnabled(false);
+        botaoPassagemSecreta.setEnabled(false);
+
+        String casaAtual = facade.getCasaAtualDoJogador();
+
+        if (casaAtual != null && painelTabuleiro != null) {
+            List<String> alcancaveis =
+                    facade.getCasasAlcancaveis(casaAtual, resultado);
+
+            painelTabuleiro.destacarCasasAlcancaveis(alcancaveis);
+        }
 
         repaint();
+    }
+
+    private void passarTurno() {
+        ClueFacade facade = ClueFacade.getInstancia();
+
+        facade.passarTurno();
+
+        jogadorDaVez = facade.getJogadorAtual();
+
+        dado1 = 1;
+        dado2 = 1;
+        dadosJaLancados = false;
+
+        botaoProximo.setEnabled(false);
+        botaoJogarDados.setEnabled(true);
+
+        if (painelTabuleiro != null) {
+            painelTabuleiro.limparDestaques();
+        }
+
+        atualizarEstadoPassagemSecreta();
+
+        repaint();
+    }
+
+    private void usarPassagemSecreta() {
+        try {
+            ClueFacade facade = ClueFacade.getInstancia();
+
+            String jogador = facade.getJogadorAtual();
+
+            facade.usarPassagemSecretaJogadorDaVez();
+
+            String destino = facade.getCasaAtualDoJogador();
+
+            if (painelTabuleiro != null) {
+                painelTabuleiro.moverPiao(jogador, destino);
+                painelTabuleiro.limparDestaques();
+            }
+
+            onMovimentoConcluido();
+
+        } catch (IllegalArgumentException ex) {
+            // Não faz nada se não puder usar passagem secreta.
+        }
+    }
+
+    private void atualizarEstadoPassagemSecreta() {
+        botaoPassagemSecreta.setEnabled(
+                ClueFacade.getInstancia().jogadorDaVezTemPassagemSecreta()
+        );
     }
 
     @Override
@@ -118,8 +227,8 @@ public class PainelLateral extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
 
         g2.setRenderingHint(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON
         );
 
         desenharAreaDosDados(g2);
