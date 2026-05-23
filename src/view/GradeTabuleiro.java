@@ -34,7 +34,7 @@ public class GradeTabuleiro {
      * diminui TAMANHO_CELULA_X e TAMANHO_CELULA_Y.
      */
     public static final int TAMANHO_CELULA_X = 30;
-    public static final int TAMANHO_CELULA_Y = 31;
+    public static final int TAMANHO_CELULA_Y = 28;
 
     /*
      * Posição da grade inteira.
