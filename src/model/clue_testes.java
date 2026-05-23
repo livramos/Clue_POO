@@ -480,5 +480,176 @@ public class clue_testes {
 	        System.out.println("Tentando mover para B sem chamar mapearCasas antes.");
 
 	        model.deslocarPiaoDaVez("B");
+	        System.out.println("\n");
+	    }
+	    
+	    @Test
+	    public void jogadorDaVezDeveTerPassagemSecretaQuandoEstaEmComodoComPassagem() {
+	        System.out.println("JOGADOR DA VEZ DEVE TER PASSAGEM SECRETA\n");
+
+	        ClueModel model = new ClueModel();
+
+	        List<String> jogadores = new ArrayList<String>();
+	        jogadores.add("Coronel Mostarda");
+	        jogadores.add("Dona Branca");
+	        jogadores.add("Srta. Scarlet");
+	        jogadores.add("Professor Black");
+
+	        model.prepararJogo(jogadores);
+
+	        model.adicionarCasaAoTabuleiro("Cozinha");
+	        model.adicionarCasaAoTabuleiro("Escritório");
+
+	        model.adicionarPassagemSecreta("Cozinha", "Escritório");
+
+	        model.posicionarPiaoDaVez("Cozinha");
+
+	        System.out.println("Jogador da vez: " + model.getNomeJogadorAtual());
+	        System.out.println("Casa atual: " + model.getNomeCasaAtualDoJogadorDaVez());
+	        System.out.println("Tem passagem secreta: " + model.jogadorDaVezTemPassagemSecreta());
+
+	        assertTrue(model.jogadorDaVezTemPassagemSecreta());
+
+	        System.out.println("*".repeat(51));
+	    }
+	    
+	    @Test
+	    public void deveRetornarDestinoDaPassagemSecretaDoJogadorDaVez() {
+	        System.out.println("DEVE RETORNAR DESTINO DA PASSAGEM SECRETA\n");
+
+	        ClueModel model = new ClueModel();
+
+	        List<String> jogadores = new ArrayList<String>();
+	        jogadores.add("Coronel Mostarda");
+	        jogadores.add("Dona Branca");
+	        jogadores.add("Srta. Scarlet");
+	        jogadores.add("Professor Black");
+
+	        model.prepararJogo(jogadores);
+
+	        model.adicionarCasaAoTabuleiro("Cozinha");
+	        model.adicionarCasaAoTabuleiro("Escritório");
+
+	        model.adicionarPassagemSecreta("Cozinha", "Escritório");
+
+	        model.posicionarPiaoDaVez("Cozinha");
+
+	        String destino = model.getDestinoPassagemSecretaDoJogadorDaVez();
+
+	        System.out.println("Casa atual: " + model.getNomeCasaAtualDoJogadorDaVez());
+	        System.out.println("Destino da passagem secreta: " + destino);
+
+	        assertEquals("Escritório", destino);
+
+	        System.out.println("*".repeat(51));
+	    }
+	    
+	    @Test
+	    public void deveUsarPassagemSecretaEDeslocarJogadorDaVez() {
+	        System.out.println("DEVE USAR PASSAGEM SECRETA E DESLOCAR JOGADOR\n");
+
+	        ClueModel model = new ClueModel();
+
+	        List<String> jogadores = new ArrayList<String>();
+	        jogadores.add("Coronel Mostarda");
+	        jogadores.add("Dona Branca");
+	        jogadores.add("Srta. Scarlet");
+	        jogadores.add("Professor Black");
+
+	        model.prepararJogo(jogadores);
+
+	        model.adicionarCasaAoTabuleiro("Cozinha");
+	        model.adicionarCasaAoTabuleiro("Escritório");
+
+	        model.adicionarPassagemSecreta("Cozinha", "Escritório");
+
+	        model.posicionarPiaoDaVez("Cozinha");
+
+	        System.out.println("Casa antes da passagem secreta: " + model.getNomeCasaAtualDoJogadorDaVez());
+
+	        model.usarPassagemSecretaJogadorDaVez();
+
+	        System.out.println("Casa depois da passagem secreta: " + model.getNomeCasaAtualDoJogadorDaVez());
+
+	        assertEquals("Escritório", model.getNomeCasaAtualDoJogadorDaVez());
+
+	        System.out.println("*".repeat(51));
+	    }
+	    
+	    @Test
+	    public void passagemSecretaDeveFuncionarNosDoisSentidos() {
+	        System.out.println("PASSAGEM SECRETA DEVE FUNCIONAR NOS DOIS SENTIDOS\n");
+
+	        ClueModel model = new ClueModel();
+
+	        List<String> jogadores = new ArrayList<String>();
+	        jogadores.add("Coronel Mostarda");
+	        jogadores.add("Dona Branca");
+	        jogadores.add("Srta. Scarlet");
+	        jogadores.add("Professor Black");
+
+	        model.prepararJogo(jogadores);
+
+	        model.adicionarCasaAoTabuleiro("Cozinha");
+	        model.adicionarCasaAoTabuleiro("Escritório");
+
+	        model.adicionarPassagemSecreta("Cozinha", "Escritório");
+
+	        model.posicionarPiaoDaVez("Escritório");
+
+	        System.out.println("Casa atual: " + model.getNomeCasaAtualDoJogadorDaVez());
+	        System.out.println("Destino da passagem secreta: " + model.getDestinoPassagemSecretaDoJogadorDaVez());
+
+	        assertTrue(model.jogadorDaVezTemPassagemSecreta());
+	        assertEquals("Cozinha", model.getDestinoPassagemSecretaDoJogadorDaVez());
+
+	        model.usarPassagemSecretaJogadorDaVez();
+
+	        System.out.println("Casa depois de usar passagem: " + model.getNomeCasaAtualDoJogadorDaVez());
+
+	        assertEquals("Cozinha", model.getNomeCasaAtualDoJogadorDaVez());
+
+	        System.out.println("*".repeat(51));
+	    }
+	    
+	    @Test(expected = IllegalArgumentException.class)
+	    public void naoDeveUsarPassagemSecretaQuandoCasaAtualNaoTemPassagem() {
+	        System.out.println("NÃO DEVE USAR PASSAGEM SECRETA EM CASA SEM PASSAGEM\n");
+
+	        ClueModel model = new ClueModel();
+
+	        List<String> jogadores = new ArrayList<String>();
+	        jogadores.add("Coronel Mostarda");
+	        jogadores.add("Dona Branca");
+	        jogadores.add("Srta. Scarlet");
+	        jogadores.add("Professor Black");
+
+	        model.prepararJogo(jogadores);
+
+	        model.adicionarCasaAoTabuleiro("Corredor");
+	        model.adicionarCasaAoTabuleiro("Cozinha");
+	        model.adicionarCasaAoTabuleiro("Escritório");
+
+	        model.adicionarPassagemSecreta("Cozinha", "Escritório");
+
+	        model.posicionarPiaoDaVez("Corredor");
+
+	        System.out.println("Casa atual: " + model.getNomeCasaAtualDoJogadorDaVez());
+	        System.out.println("Tentando usar passagem secreta em uma casa sem passagem.");
+
+	        model.usarPassagemSecretaJogadorDaVez();
+	    }
+	    
+	    @Test(expected = IllegalArgumentException.class)
+	    public void naoDeveAdicionarPassagemSecretaEntreCasasInexistentes() {
+	        System.out.println("NÃO DEVE ADICIONAR PASSAGEM ENTRE CASAS INEXISTENTES\n");
+
+	        ClueModel model = new ClueModel();
+
+	        model.adicionarCasaAoTabuleiro("Cozinha");
+
+	        System.out.println("Tentando criar passagem entre Cozinha e Escritório, mas Escritório não existe.");
+
+	        model.adicionarPassagemSecreta("Cozinha", "Escritório");
 	    }
 }

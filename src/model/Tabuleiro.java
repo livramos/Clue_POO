@@ -11,9 +11,10 @@ import java.util.Set;
 
 class Tabuleiro {
     private Map<String, Casa> casas;
-
+    private Map<String, String> passagensSecretas;
     Tabuleiro() {
         this.casas = new HashMap<String, Casa>();
+        this.passagensSecretas = new HashMap<String, String>();
     }
 
     void adicionarCasa(Casa casa) {
@@ -36,6 +37,25 @@ class Tabuleiro {
         casa2.adicionarCasaAdjacente(casa1);
     }
 
+    void adicionarPassagemSecreta(String origem, String destino) {
+        if (!casas.containsKey(origem) || !casas.containsKey(destino)) {
+            throw new IllegalArgumentException("Os cômodos da passagem secreta precisam existir no tabuleiro.");
+        }
+
+        passagensSecretas.put(origem, destino);
+        passagensSecretas.put(destino, origem);
+    }
+
+    boolean temPassagemSecreta(String nomeCasa) {
+        return passagensSecretas.containsKey(nomeCasa);
+    }
+
+    String getDestinoPassagemSecreta(String nomeCasa) {
+        return passagensSecretas.get(nomeCasa);
+    } 
+    
+    
+    
     List<Casa> mapearCasasAlcancaveis(Casa casaInicial, int valorDados) {
         List<Casa> casasAlcancaveis = new ArrayList<Casa>();
         Set<Casa> casasVisitadas = new HashSet<Casa>();
