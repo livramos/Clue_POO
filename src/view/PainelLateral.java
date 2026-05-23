@@ -9,10 +9,13 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+
+import model.ClueFacade;
 
 public class PainelLateral extends JPanel {
     private JButton botaoPassagemSecreta;
@@ -30,6 +33,9 @@ public class PainelLateral extends JPanel {
     private String jogadorDaVez;
     private int dado1;
     private int dado2;
+    private boolean dadosJaLancados;
+    
+    private PainelTabuleiro painelTabuleiro;
 
     public PainelLateral() {
         setPreferredSize(new Dimension(220, 900));
@@ -39,11 +45,23 @@ public class PainelLateral extends JPanel {
         jogadorDaVez = "Miss. Scarlet";
         dado1 = 1;
         dado2 = 1;
+        dadosJaLancados = false;
 
         carregarImagens();
         criarBotoes();
         posicionarBotoes();
         configurarEventos();
+    }
+    
+    public void setPainelTabuleiro(PainelTabuleiro painelTabuleiro) {
+        this.painelTabuleiro = painelTabuleiro;
+    }
+    
+    public void onMovimentoConcluido() {
+        dadosJaLancados = false;
+        botaoJogarDados.setEnabled(false);   // desabilita até próximo turno
+        botaoProximo.setEnabled(true);       // libera o botão de passar turno
+        repaint();
     }
 
     private void carregarImagens() {
@@ -102,12 +120,53 @@ public class PainelLateral extends JPanel {
                 jogarDados();
             }
         });
+        
+        botaoProximo.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                passarTurno();
+            }
+        });
     }
 
     private void jogarDados() {
-        dado1 = (int) (Math.random() * 6) + 1;
-        dado2 = (int) (Math.random() * 6) + 1;
-
+    	   if (dadosJaLancados) {
+               return; // não permite relançar no mesmo turno
+           }
+    
+           ClueFacade facade = ClueFacade.getInstancia();
+           int[] resultado   = facade.lancarDados();
+           dado1 = resultado[0];
+           dado2 = resultado[1];
+           dadosJaLancados = true;
+    
+           botaoJogarDados.setEnabled(false); // só pode lançar uma vez por turno
+    
+           // Pede as casas alcançáveis e destaca no tabuleiro
+           String casaAtual = facade.getCasaAtualDoJogador();
+           if (casaAtual != null && painelTabuleiro != null) {
+               List<String> alcancaveis = facade.getCasasAlcancaveis(casaAtual, resultado);
+               painelTabuleiro.destacarCasasAlcancaveis(alcancaveis);
+           }
+    
+           repaint();
+    }
+    
+    private void passarTurno() {
+        ClueFacade facade = ClueFacade.getInstancia();
+        facade.passarTurno();
+ 
+        jogadorDaVez    = facade.getJogadorAtual();
+        dado1           = 1;
+        dado2           = 1;
+        dadosJaLancados = false;
+ 
+        botaoProximo.setEnabled(false);
+        botaoJogarDados.setEnabled(true);
+ 
+        if (painelTabuleiro != null) {
+            painelTabuleiro.limparDestaques();
+        }
+ 
         repaint();
     }
 

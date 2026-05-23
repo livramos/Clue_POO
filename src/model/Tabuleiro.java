@@ -50,9 +50,10 @@ class Tabuleiro {
             Casa casaAtual = atual.getCasa();
             int distanciaAtual = atual.getDistancia();
 
-            if (distanciaAtual > 0) {
-                casasAlcancaveis.add(casaAtual);
-            }
+            if (distanciaAtual == valorDados || 
+            	    (distanciaAtual > 0 && casaAtual.getNome().startsWith("COMODO_"))) {
+            	    casasAlcancaveis.add(casaAtual);
+            	}
 
             if (distanciaAtual < valorDados) {
                 for (Casa adjacente : casaAtual.getCasasAdjacentes()) {
@@ -67,3 +68,5 @@ class Tabuleiro {
         return casasAlcancaveis;
     }
 }
+	
+	
