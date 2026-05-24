@@ -13,20 +13,20 @@ import java.util.Set;
 
 public class GradeTabuleiro {
 
-	 public static final int TABULEIRO_X = 20;
-	    public static final int TABULEIRO_Y = 20;
+    public static final int TABULEIRO_X = 20;
+    public static final int TABULEIRO_Y = 20;
 
-	    public static final int TABULEIRO_LARGURA = 850;
-	    public static final int TABULEIRO_ALTURA = 820;
+    public static final int TABULEIRO_LARGURA = 850;
+    public static final int TABULEIRO_ALTURA = 820;
 
-	    public static final int LINHAS = 23;
-	    public static final int COLUNAS = 23;
+    public static final int LINHAS = 23;
+    public static final int COLUNAS = 23;
 
-	    public static final int TAMANHO_CELULA_X = 30;
-	    public static final int TAMANHO_CELULA_Y = 28;
+    public static final int TAMANHO_CELULA_X = 30;
+    public static final int TAMANHO_CELULA_Y = 28;
 
-	    public static final int AJUSTE_GRADE_X = 62;
-	    public static final int AJUSTE_GRADE_Y = 89;
+    public static final int AJUSTE_GRADE_X = 62;
+    public static final int AJUSTE_GRADE_Y = 89;
 
     private static final Map<Integer, Integer> ESPACO_EXTRA_COLUNA_X =
             new HashMap<Integer, Integer>();
@@ -34,20 +34,17 @@ public class GradeTabuleiro {
     private static final Set<String> CASAS_REMOVIDAS =
             new HashSet<String>();
 
-    /*
-     * Deixe true enquanto estiver ajustando o tabuleiro.
-     * Quando for gravar/apresentar, pode trocar para false.
-     */
-    private static final boolean MODO_DEBUG = true;
-    
+    private static final boolean MODO_DEBUG = false;
+
     private static final Color COR_DEBUG_COMODO =
             new Color(255, 0, 180, 60);
 
     private static final Color COR_BORDA_COMODO =
-            new Color(180, 0, 120, 180);	
-    
+            new Color(180, 0, 120, 180);
+
     private static final Color COR_CORREDOR = new Color(0, 180, 255, 170);
     private static final Color COR_BORDA_COR = new Color(0, 100, 255, 255);
+    private static final boolean DESENHAR_DEBUG_COMODOS = false;
 
     private static final Color COR_PORTA = new Color(255, 140, 0, 200);
     private static final Color COR_BORDA_PORTA = new Color(255, 80, 0, 255);
@@ -121,7 +118,7 @@ public class GradeTabuleiro {
 
     private final List<String> portasDestacadas =
             new ArrayList<String>();
-    
+
     private final Map<String, List<Rectangle>> expansoesComodos =
             new HashMap<String, List<Rectangle>>();
 
@@ -129,12 +126,20 @@ public class GradeTabuleiro {
             new HashMap<String, List<Rectangle>>();
 
     static {
-        /*
-         * Pequeno espaço visual entre a coluna C5 e C6.
-         */
         ESPACO_EXTRA_COLUNA_X.put(6, 4);
 
         inicializarCasasRemovidas();
+
+        /*
+         * Casas restauradas para permitir passagem dos peões.
+         *
+         * Essas casas tinham sido removidas em inicializarCasasRemovidas(),
+         * então agora tiramos elas do conjunto CASAS_REMOVIDAS.
+         */
+        restaurar("L0C8");
+        restaurar("L0C9");
+        restaurar("L0C14");
+        restaurar("L0C15");
     }
 
     public GradeTabuleiro() {
@@ -144,11 +149,11 @@ public class GradeTabuleiro {
     public Set<String> getCasasCorredor() {
         return casasCorredor;
     }
-    
+
     private String formatarNomeComodo(String nome) {
         return nome.replace("COMODO_", "");
     }
-    
+
     public void destacarCasas(List<String> nomes) {
         casasDestacadas.clear();
         portasDestacadas.clear();
@@ -157,6 +162,15 @@ public class GradeTabuleiro {
             String nome = normalizarNomeCasa(nomeOriginal);
 
             if (!mapaCasas.containsKey(nome)) {
+                continue;
+            }
+
+            /*
+             * Não pinta cômodos inteiros durante o jogo.
+             * Eles continuam clicáveis e válidos como destino,
+             * mas não ficam destacados de azul.
+             */
+            if (nome.startsWith("COMODO_")) {
                 continue;
             }
 
@@ -259,9 +273,6 @@ public class GradeTabuleiro {
     private void desenharDebug(Graphics2D g2) {
         g2.setFont(new Font("Arial", Font.PLAIN, 8));
 
-        /*
-         * Primeiro desenha corredores e portas.
-         */
         for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
             String nome = e.getKey();
 
@@ -310,9 +321,6 @@ public class GradeTabuleiro {
             );
         }
 
-        /*
-         * Depois desenha os retângulos dos cômodos.
-         */
         g2.setFont(new Font("Arial", Font.BOLD, 10));
 
         for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
@@ -325,6 +333,7 @@ public class GradeTabuleiro {
             Rectangle r = e.getValue();
 
             g2.setColor(COR_DEBUG_COMODO);
+
             g2.fillRect(
                     r.x,
                     r.y,
@@ -333,6 +342,7 @@ public class GradeTabuleiro {
             );
 
             g2.setColor(COR_BORDA_COMODO);
+
             g2.drawRect(
                     r.x,
                     r.y,
@@ -341,39 +351,40 @@ public class GradeTabuleiro {
             );
 
             g2.setColor(Color.BLACK);
+
             g2.drawString(
                     formatarNomeComodo(nome),
                     r.x + 6,
                     r.y + 14
             );
+
             List<Rectangle> expansoes = expansoesComodos.get(nome);
 
             if (expansoes != null) {
-                g2.setColor((COR_DEBUG_COMODO));
-
                 for (Rectangle extra : expansoes) {
-                    g2.fillRect(extra.x, extra.y, extra.width, extra.height);
                     g2.setColor(COR_DEBUG_COMODO);
-                    g2.drawRect(extra.x, extra.y, extra.width, extra.height);
+                    g2.fillRect(extra.x, extra.y, extra.width, extra.height);
+
                     g2.setColor(COR_BORDA_COMODO);
+                    g2.drawRect(extra.x, extra.y, extra.width, extra.height);
                 }
             }
 
             List<Rectangle> recortes = recortesComodos.get(nome);
 
             if (recortes != null) {
-                g2.setColor(new Color(255, 0, 0, 70));
-
                 for (Rectangle corte : recortes) {
+                    g2.setColor(new Color(255, 0, 0, 70));
                     g2.fillRect(corte.x, corte.y, corte.width, corte.height);
+
                     g2.setColor(new Color(180, 0, 0, 180));
                     g2.drawRect(corte.x, corte.y, corte.width, corte.height);
-                    g2.setColor(new Color(255, 0, 0, 70));
                 }
             }
         }
 
         g2.setColor(Color.YELLOW);
+
         g2.setFont(new Font("Arial", Font.BOLD, 10));
 
         g2.drawString(
@@ -387,7 +398,6 @@ public class GradeTabuleiro {
                 TABULEIRO_X + 5,
                 TABULEIRO_Y + TABULEIRO_ALTURA - 5
         );
-        
     }
 
     private void inicializarMapa() {
@@ -419,10 +429,6 @@ public class GradeTabuleiro {
                             nomeComodo
                     );
 
-                    /*
-                     * A porta precisa existir no Model como casa caminhável,
-                     * mesmo que visualmente ela tenha sido marcada como removida.
-                     */
                     casasCorredor.add(nomeCasa);
                 }
             }
@@ -432,43 +438,39 @@ public class GradeTabuleiro {
         inicializarAjustesFinosComodos();
         inicializarCasasIniciais();
     }
-    private void inicializarCasasIniciais() {
-        /*
-         * Casas iniciais dos personagens.
-         * Os valores são aproximados de acordo com as casas coloridas do tabuleiro.
-         * Se precisar ajustar visualmente, altere o x e y dos Rectangles.
-         */
 
+    private void inicializarCasasIniciais() {
         mapaCasas.put(
                 "INICIO_Srta. Scarlet",
-                new Rectangle(255, 750, 65, 45)
+                new Rectangle(275, 750, 65, 45)
         );
 
         mapaCasas.put(
                 "INICIO_Coronel Mostarda",
-                new Rectangle(60, 535, 55, 70)
+                new Rectangle(65, 535, 55, 70)
         );
 
         mapaCasas.put(
                 "INICIO_Sra. Peacock",
-                new Rectangle(780, 215, 50, 70)
+                new Rectangle(770, 225, 50, 70)
         );
 
         mapaCasas.put(
                 "INICIO_Sra. White",
-                new Rectangle(330, 65, 55, 60)
+                new Rectangle(340, 60, 55, 60)
         );
 
         mapaCasas.put(
                 "INICIO_Sr. Green",
-                new Rectangle(505, 65, 65, 60)
+                new Rectangle(490, 60, 65, 60)
         );
 
         mapaCasas.put(
                 "INICIO_Professor Plum",
-                new Rectangle(760, 585, 65, 65)
+                new Rectangle(770, 596, 65, 65)
         );
     }
+
     private void inicializarRetangulosComodos() {
         mapaCasas.put(
                 "COMODO_Cozinha",
@@ -515,43 +517,76 @@ public class GradeTabuleiro {
                 new Rectangle(625, 670, 183, 113)
         );
     }
-    
-    private void inicializarAjustesFinosComodos() {
-        /* =========================
-           COZINHA
-           ========================= */
 
-        // VERDE: faixa inferior deve fazer parte da Cozinha
+    private void inicializarAjustesFinosComodos() {
         adicionarExpansaoComodo(
                 "COMODO_Cozinha",
                 criarRetanguloAreaGrade(5, 1, 5, 5)
         );
 
- 
+        /*
+         * SALA DE JANTAR
+         *
+         * Recorte no canto superior direito.
+         * Isso corrige a "escadinha" para a Sala de Jantar não pegar
+         * as casas L8C5, L8C6 e L8C7.
+         */
+        adicionarRecorteComodo(
+                "COMODO_Sala de Jantar",
+                criarRetanguloAreaGrade(8, 5, 8, 7)
+        );
+        removerArea(8, 5, 8, 7);
 
+        adicionarRecorteComodo(
+                "COMODO_Sala de Musica",
+                criarRetanguloAreaGrade(0, 8, 0, 9)
+        );
+        removerArea(0, 8, 0, 9);
 
-        /* =========================
-           BIBLIOTECA
-           ========================= */
+        adicionarRecorteComodo(
+                "COMODO_Sala de Musica",
+                criarRetanguloAreaGrade(0, 14, 0, 15)
+        );
+        removerArea(0, 14, 0, 15);
 
-        // VERDE: incluir extensão lateral esquerda
+        /*
+         * Como L0C8, L0C9, L0C14 e L0C15 precisam ser caminháveis,
+         * restauramos novamente depois dos removerArea acima.
+         */
+        restaurar("L0C8");
+        restaurar("L0C9");
+        restaurar("L0C14");
+        restaurar("L0C15");
+
+        adicionarRecorteComodo(
+                "COMODO_Biblioteca",
+                criarRetanguloAreaGrade(13, 23, 13, 23)
+        );
+        removerArea(13, 23, 13, 23);
+
+        adicionarRecorteComodo(
+                "COMODO_Biblioteca",
+                criarRetanguloAreaGrade(17, 23, 17, 23)
+        );
+        removerArea(17, 23, 17, 23);
+
+        adicionarRecorteComodo(
+                "COMODO_Sala de Estar",
+                criarRetanguloAreaGrade(22, 6, 22, 6)
+        );
+
+        removerArea(22, 6, 22, 6);
+
         adicionarExpansaoComodo(
                 "COMODO_Biblioteca",
                 criarRetanguloAreaGrade(14, 17, 16, 17)
         );
 
-
-        // VERDE: incluir faixa inferior
         adicionarExpansaoComodo(
                 "COMODO_Entrada",
                 criarRetanguloAreaGrade(23, 10, 23, 13)
         );
 
-        /* =========================
-           ESCRITÓRIO
-           ========================= */
-
-        // VERDE: incluir extensão vertical esquerda
         adicionarExpansaoComodo(
                 "COMODO_Escritorio",
                 criarRetanguloAreaGrade(20, 17, 22, 17)
@@ -642,10 +677,6 @@ public class GradeTabuleiro {
     }
 
     public String getCasaClicada(int px, int py) {
-        /*
-         * Primeiro verifica os cômodos.
-         * Isso é importante porque os cômodos são áreas grandes.
-         */
         for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
             String nome = e.getKey();
 
@@ -658,9 +689,6 @@ public class GradeTabuleiro {
             }
         }
 
-        /*
-         * Depois verifica corredores e portas.
-         */
         for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
             String nome = e.getKey();
 
@@ -690,6 +718,10 @@ public class GradeTabuleiro {
         CASAS_REMOVIDAS.add(nomeCasa);
     }
 
+    private static void restaurar(String nomeCasa) {
+        CASAS_REMOVIDAS.remove(nomeCasa);
+    }
+
     private static void removerArea(
             int linhaInicial,
             int colunaInicial,
@@ -702,6 +734,7 @@ public class GradeTabuleiro {
             }
         }
     }
+
     private Rectangle criarRetanguloAreaGrade(
             int linhaInicial,
             int colunaInicial,
@@ -772,13 +805,7 @@ public class GradeTabuleiro {
         return true;
     }
 
-   
     private static void inicializarCasasRemovidas() {
-        /*
-         * Essas remoções aproximam a malha lógica do formato real do tabuleiro.
-         * As portas são recolocadas em casasCorredor dentro de inicializarMapa().
-         */
-
         removerArea(0, 0, 0, 5);
 
         removerArea(1, 0, 1, 4);
@@ -806,6 +833,7 @@ public class GradeTabuleiro {
         remover("L3C5");
         remover("L4C5");
         remover("L5C5");
+        remover("L0C6");
 
         removerArea(0, 10, 0, 13);
         removerArea(1, 8, 1, 15);

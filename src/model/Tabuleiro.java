@@ -86,6 +86,16 @@ class Tabuleiro {
              */
             if (distanciaAtual < valorDados) {
                 for (Casa adjacente : casaAtual.getCasasAdjacentes()) {
+
+                    /*
+                     * Bloqueia entrada em casas iniciais.
+                     * A peça começa no INICIO_, mas depois ninguém pode entrar nele,
+                     * nem a própria peça que saiu.
+                     */
+                    if (adjacente.getNome().startsWith("INICIO_")) {
+                        continue;
+                    }
+
                     if (!casasVisitadas.contains(adjacente) && !adjacente.estaOcupada()) {
                         casasVisitadas.add(adjacente);
                         fila.add(new CasaComDistancia(adjacente, distanciaAtual + 1));
