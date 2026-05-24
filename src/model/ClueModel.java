@@ -165,17 +165,18 @@ public class ClueModel {
         }
 
         List<Casa> casasAlcancaveis = tabuleiro.mapearCasasAlcancaveis(casaInicial, totalDados);
+
         List<String> nomesCasas = new ArrayList<String>();
 
         for (Casa casa : casasAlcancaveis) {
             nomesCasas.add(casa.getNome());
         }
-        
-        this.ultimasCasasMapeadas = nomesCasas;
+
+        ultimasCasasMapeadas.clear();
+        ultimasCasasMapeadas.addAll(nomesCasas);
 
         return nomesCasas;
     }
-
     public void deslocarPiao(String nomeJogador, String nomeCasaDestino) {
         Jogador jogador = jogadoresPorNome.get(nomeJogador);
         Casa destino = tabuleiro.getCasa(nomeCasaDestino);

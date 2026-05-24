@@ -63,9 +63,8 @@ public class PainelLateral extends JPanel {
         dadosJaLancados = false;
 
         botaoJogarDados.setEnabled(false);
+        botaoPassagemSecreta.setEnabled(false);
         botaoProximo.setEnabled(true);
-
-        atualizarEstadoPassagemSecreta();
 
         repaint();
     }
@@ -191,7 +190,7 @@ public class PainelLateral extends JPanel {
 
         repaint();
     }
-
+    
     private void usarPassagemSecreta() {
         try {
             ClueFacade facade = ClueFacade.getInstancia();
@@ -210,7 +209,7 @@ public class PainelLateral extends JPanel {
             onMovimentoConcluido();
 
         } catch (IllegalArgumentException ex) {
-            // Não faz nada se não puder usar passagem secreta.
+            // Se não puder usar passagem secreta, não faz nada.
         }
     }
 

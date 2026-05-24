@@ -92,7 +92,7 @@ public class PainelTabuleiro extends JPanel {
 
         String destino = grade.getCasaClicada(px, py);
 
-        System.out.println("Casa detectada antes da conversao: " + destino);
+        System.out.println("Destino detectado: " + destino);
 
         if (destino == null) {
             return;
@@ -104,6 +104,10 @@ public class PainelTabuleiro extends JPanel {
 
         System.out.println("Destino final: " + destino);
 
+        tentarMoverJogadorAtual(destino);
+    }
+
+    private void tentarMoverJogadorAtual(String destino) {
         try {
             ClueFacade facade = ClueFacade.getInstancia();
 
@@ -141,9 +145,20 @@ public class PainelTabuleiro extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON
         );
 
+        desenharFundo(g2);
+        desenharImagemTabuleiro(g2);
+
+        grade.desenharDestaques(g2);
+
+        desenharPioes(g2);
+    }
+
+    private void desenharFundo(Graphics2D g2) {
         g2.setColor(Color.GRAY);
         g2.fillRect(0, 0, getWidth(), getHeight());
+    }
 
+    private void desenharImagemTabuleiro(Graphics2D g2) {
         if (imagemTabuleiro != null) {
             g2.drawImage(
                     imagemTabuleiro,
@@ -154,31 +169,26 @@ public class PainelTabuleiro extends JPanel {
                     null
             );
         }
-
-        grade.desenharDestaques(g2);
-
-        desenharPioes(g2);
     }
 
     private void desenharPioes(Graphics2D g2) {
         for (Map.Entry<String, String> entrada : posicoesPioes.entrySet()) {
-            Rectangle r = grade.getRetanguloCasaOuComodo(entrada.getValue());
+            String jogador = entrada.getKey();
+            String casa = entrada.getValue();
+
+            Rectangle r = grade.getRetanguloCasaOuComodo(casa);
 
             if (r == null) {
                 continue;
             }
 
-            Color cor = coresPioes.get(entrada.getKey());
+            Color cor = coresPioes.get(jogador);
 
             if (cor == null) {
                 cor = Color.GRAY;
             }
 
-            int d = Math.min(r.width, r.height) - 6;
-
-            if (d < 10) {
-                d = 10;
-            }
+            int d = calcularTamanhoPiao(casa, r);
 
             int cx = r.x + (r.width - d) / 2;
             int cy = r.y + (r.height - d) / 2;
@@ -189,5 +199,23 @@ public class PainelTabuleiro extends JPanel {
             g2.setColor(Color.BLACK);
             g2.drawOval(cx, cy, d, d);
         }
+    }
+
+    private int calcularTamanhoPiao(String casa, Rectangle r) {
+        if (casa != null && casa.startsWith("COMODO_")) {
+            return 24;
+        }
+
+        int d = Math.min(r.width, r.height) - 6;
+
+        if (d < 10) {
+            d = 10;
+        }
+
+        if (d > 24) {
+            d = 24;
+        }
+
+        return d;
     }
 }
