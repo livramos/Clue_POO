@@ -59,7 +59,6 @@ class Tabuleiro {
     } 
     
     
-    
     List<Casa> mapearCasasAlcancaveis(Casa casaInicial, int valorDados) {
         List<Casa> casasAlcancaveis = new ArrayList<Casa>();
         Set<Casa> casasVisitadas = new HashSet<Casa>();
@@ -74,13 +73,18 @@ class Tabuleiro {
             Casa casaAtual = atual.getCasa();
             int distanciaAtual = atual.getDistancia();
 
-            boolean ehComodo = casaAtual.getNome().startsWith("COMODO_");
-
-            if (distanciaAtual == valorDados || (distanciaAtual > 0 && ehComodo)) {
+            /*
+             * Adiciona todas as casas alcançáveis com até o valor dos dados.
+             * Não adiciona a casa inicial, porque distância 0 é onde o jogador já está.
+             */
+            if (distanciaAtual > 0 && distanciaAtual <= valorDados) {
                 casasAlcancaveis.add(casaAtual);
             }
 
-            if (distanciaAtual < valorDados && !(distanciaAtual > 0 && ehComodo)) {
+            /*
+             * Só continua expandindo caminhos enquanto ainda houver passos disponíveis.
+             */
+            if (distanciaAtual < valorDados) {
                 for (Casa adjacente : casaAtual.getCasasAdjacentes()) {
                     if (!casasVisitadas.contains(adjacente) && !adjacente.estaOcupada()) {
                         casasVisitadas.add(adjacente);
