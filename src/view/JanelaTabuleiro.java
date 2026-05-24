@@ -54,28 +54,22 @@ public class JanelaTabuleiro extends JFrame {
 
         Set<String> corredores = grade.getCasasCorredor();
 
+        adicionarCorredores(facade, corredores);
+        adicionarComodos(facade);
+        adicionarPortasComodos(facade);
+
+        conectarCorredores(facade, corredores);
+        conectarComodos(facade);
+
+        adicionarPassagensSecretas(facade);
+
+        posicionarJogadoresIniciais(facade);
+    }
+
+    private void adicionarCorredores(ClueFacade facade, Set<String> corredores) {
         for (String casa : corredores) {
             facade.adicionarCasa(casa);
         }
-
-        adicionarComodos(facade);
-        conectarCorredores(facade, corredores);
-        conectarComodos(facade);
-        adicionarPassagensSecretas(facade);
-
-        facade.posicionarJogador("Srta. Scarlet", GradeTabuleiro.nomeCelula(23, 7));
-        facade.posicionarJogador("Coronel Mostarda", GradeTabuleiro.nomeCelula(0, 16));
-        facade.posicionarJogador("Sra. Peacock", GradeTabuleiro.nomeCelula(7, 23));
-    }
-
-    private void inicializarPioesNaTela() {
-        painelTabuleiro.moverPiao("Srta. Scarlet", GradeTabuleiro.nomeCelula(23, 7));
-        painelTabuleiro.moverPiao("Coronel Mostarda", GradeTabuleiro.nomeCelula(0, 16));
-        painelTabuleiro.moverPiao("Sra. Peacock", GradeTabuleiro.nomeCelula(7, 23));
-
-        painelLateral.atualizarJogadorDaVez(
-                ClueFacade.getInstancia().getJogadorAtual()
-        );
     }
 
     private void adicionarComodos(ClueFacade facade) {
@@ -88,6 +82,31 @@ public class JanelaTabuleiro extends JFrame {
         facade.adicionarCasa("COMODO_Sala de Estar");
         facade.adicionarCasa("COMODO_Entrada");
         facade.adicionarCasa("COMODO_Escritorio");
+    }
+
+    private void adicionarPortasComodos(ClueFacade facade) {
+        facade.adicionarCasa("L3C5");
+        facade.adicionarCasa("L4C5");
+
+        facade.adicionarCasa("L6C8");
+        facade.adicionarCasa("L6C15");
+
+        facade.adicionarCasa("L3C18");
+        facade.adicionarCasa("L4C18");
+
+        facade.adicionarCasa("L7C0");
+
+        facade.adicionarCasa("L17C6");
+
+        facade.adicionarCasa("L17C16");
+
+        facade.adicionarCasa("L19C6");
+
+        facade.adicionarCasa("L18C11");
+        facade.adicionarCasa("L18C12");
+        facade.adicionarCasa("L21C15");
+
+        facade.adicionarCasa("L21C18");
     }
 
     private void conectarCorredores(ClueFacade facade, Set<String> corredores) {
@@ -109,24 +128,28 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     private void conectarComodos(ClueFacade facade) {
-        facade.conectarCasas("COMODO_Cozinha", "L6C6");
+        facade.conectarCasas("COMODO_Cozinha", "L3C5");
+        facade.conectarCasas("COMODO_Cozinha", "L4C5");
 
         facade.conectarCasas("COMODO_Sala de Musica", "L6C8");
         facade.conectarCasas("COMODO_Sala de Musica", "L6C15");
 
-        facade.conectarCasas("COMODO_Jardim de Inverno", "L6C16");
+        facade.conectarCasas("COMODO_Jardim de Inverno", "L3C18");
+        facade.conectarCasas("COMODO_Jardim de Inverno", "L4C18");
 
-        facade.conectarCasas("COMODO_Sala de Jantar", "L7C7");
+        facade.conectarCasas("COMODO_Sala de Jantar", "L7C0");
 
-        facade.conectarCasas("COMODO_Salao de Jogos", "L7C16");
+        facade.conectarCasas("COMODO_Salao de Jogos", "L17C6");
 
-        facade.conectarCasas("COMODO_Biblioteca", "L15C16");
+        facade.conectarCasas("COMODO_Biblioteca", "L17C16");
 
-        facade.conectarCasas("COMODO_Sala de Estar", "L20C7");
+        facade.conectarCasas("COMODO_Sala de Estar", "L19C6");
 
-        facade.conectarCasas("COMODO_Entrada", "L17C9");
+        facade.conectarCasas("COMODO_Entrada", "L18C11");
+        facade.conectarCasas("COMODO_Entrada", "L18C12");
+        facade.conectarCasas("COMODO_Entrada", "L21C15");
 
-        facade.conectarCasas("COMODO_Escritorio", "L20C16");
+        facade.conectarCasas("COMODO_Escritorio", "L21C18");
     }
 
     private void adicionarPassagensSecretas(ClueFacade facade) {
@@ -138,6 +161,22 @@ public class JanelaTabuleiro extends JFrame {
         facade.adicionarPassagemSecreta(
                 "COMODO_Jardim de Inverno",
                 "COMODO_Escritorio"
+        );
+    }
+
+    private void posicionarJogadoresIniciais(ClueFacade facade) {
+        facade.posicionarJogador("Srta. Scarlet", "COMODO_Cozinha");
+        facade.posicionarJogador("Coronel Mostarda", "COMODO_Sala de Musica");
+        facade.posicionarJogador("Sra. Peacock", "COMODO_Jardim de Inverno");
+    }
+
+    private void inicializarPioesNaTela() {
+        painelTabuleiro.moverPiao("Srta. Scarlet", "COMODO_Cozinha");
+        painelTabuleiro.moverPiao("Coronel Mostarda", "COMODO_Sala de Musica");
+        painelTabuleiro.moverPiao("Sra. Peacock", "COMODO_Jardim de Inverno");
+
+        painelLateral.atualizarJogadorDaVez(
+                ClueFacade.getInstancia().getJogadorAtual()
         );
     }
 

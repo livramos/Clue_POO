@@ -30,9 +30,13 @@ class Tabuleiro {
         Casa casa2 = casas.get(nomeCasa2);
 
         if (casa1 == null || casa2 == null) {
-            throw new IllegalArgumentException("Uma das casas não existe no tabuleiro.");
+            throw new IllegalArgumentException(
+                "Erro ao conectar casas: " +
+                nomeCasa1 + " existe? " + (casa1 != null) +
+                " | " +
+                nomeCasa2 + " existe? " + (casa2 != null)
+            );
         }
-
         casa1.adicionarCasaAdjacente(casa2);
         casa2.adicionarCasaAdjacente(casa1);
     }
