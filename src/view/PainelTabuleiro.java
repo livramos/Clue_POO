@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
@@ -25,6 +26,7 @@ public class PainelTabuleiro extends JPanel {
     private PainelLateral painelLateral;
 
     private Map<String, String> posicoesPioes;
+    private Map<String, Point> pontosPioes;
     private Map<String, Color> coresPioes;
 
     private static final int TABULEIRO_X = 20;
@@ -48,6 +50,7 @@ public class PainelTabuleiro extends JPanel {
         grade = new GradeTabuleiro();
 
         posicoesPioes = new HashMap<String, String>();
+        pontosPioes = new HashMap<String, Point>();
         coresPioes = new HashMap<String, Color>();
 
         coresPioes.put("Srta. Scarlet", Color.RED);
@@ -76,6 +79,13 @@ public class PainelTabuleiro extends JPanel {
 
     public void moverPiao(String jogador, String casa) {
         posicoesPioes.put(jogador, casa);
+        pontosPioes.remove(jogador);
+        repaint();
+    }
+
+    public void moverPiao(String jogador, String casa, int px, int py) {
+        posicoesPioes.put(jogador, casa);
+        pontosPioes.put(jogador, new Point(px, py));
         repaint();
     }
 
@@ -111,7 +121,11 @@ public class PainelTabuleiro extends JPanel {
 
             facade.moverJogadorAtual(destino);
 
-            moverPiao(jogadorAtual, destino);
+            if (destino.startsWith("COMODO_")) {
+                moverPiao(jogadorAtual, destino, px, py);
+            } else {
+                moverPiao(jogadorAtual, destino);
+            }
 
             grade.limparDestaques();
 
@@ -162,26 +176,45 @@ public class PainelTabuleiro extends JPanel {
 
     private void desenharPioes(Graphics2D g2) {
         for (Map.Entry<String, String> entrada : posicoesPioes.entrySet()) {
-            Rectangle r = grade.getRetanguloCasaOuComodo(entrada.getValue());
+            String jogador = entrada.getKey();
+            String casa = entrada.getValue();
+
+            Rectangle r = grade.getRetanguloCasaOuComodo(casa);
 
             if (r == null) {
                 continue;
             }
 
-            Color cor = coresPioes.get(entrada.getKey());
+            Color cor = coresPioes.get(jogador);
 
             if (cor == null) {
                 cor = Color.GRAY;
             }
 
-            int d = Math.min(r.width, r.height) - 6;
+            int d;
 
-            if (d < 10) {
-                d = 10;
+            if (casa.startsWith("COMODO_")) {
+                d = 24;
+            } else {
+                d = Math.min(r.width, r.height) - 6;
+
+                if (d < 10) {
+                    d = 10;
+                }
             }
 
-            int cx = r.x + (r.width - d) / 2;
-            int cy = r.y + (r.height - d) / 2;
+            Point ponto = pontosPioes.get(jogador);
+
+            int cx;
+            int cy;
+
+            if (ponto != null && casa.startsWith("COMODO_")) {
+                cx = ponto.x - d / 2;
+                cy = ponto.y - d / 2;
+            } else {
+                cx = r.x + (r.width - d) / 2;
+                cy = r.y + (r.height - d) / 2;
+            }
 
             g2.setColor(cor);
             g2.fillOval(cx, cy, d, d);
