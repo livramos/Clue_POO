@@ -88,7 +88,11 @@ public class PainelTabuleiro extends JPanel {
     }
 
     private void tratarClique(int px, int py) {
+        System.out.println("Clique em pixel: x=" + px + " y=" + py);
+
         String destino = grade.getCasaClicada(px, py);
+
+        System.out.println("Destino detectado: " + destino);
 
         if (destino == null) {
             return;
@@ -98,9 +102,7 @@ public class PainelTabuleiro extends JPanel {
             destino = grade.getComodoDaPorta(destino);
         }
 
-        if (destino == null) {
-            return;
-        }
+        System.out.println("Destino final: " + destino);
 
         tentarMoverJogadorAtual(destino);
     }

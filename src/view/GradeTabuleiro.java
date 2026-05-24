@@ -430,8 +430,45 @@ public class GradeTabuleiro {
 
         inicializarRetangulosComodos();
         inicializarAjustesFinosComodos();
+        inicializarCasasIniciais();
     }
+    private void inicializarCasasIniciais() {
+        /*
+         * Casas iniciais dos personagens.
+         * Os valores são aproximados de acordo com as casas coloridas do tabuleiro.
+         * Se precisar ajustar visualmente, altere o x e y dos Rectangles.
+         */
 
+        mapaCasas.put(
+                "INICIO_Srta. Scarlet",
+                new Rectangle(255, 750, 65, 45)
+        );
+
+        mapaCasas.put(
+                "INICIO_Coronel Mostarda",
+                new Rectangle(60, 535, 55, 70)
+        );
+
+        mapaCasas.put(
+                "INICIO_Sra. Peacock",
+                new Rectangle(780, 215, 50, 70)
+        );
+
+        mapaCasas.put(
+                "INICIO_Sra. White",
+                new Rectangle(330, 65, 55, 60)
+        );
+
+        mapaCasas.put(
+                "INICIO_Sr. Green",
+                new Rectangle(505, 65, 65, 60)
+        );
+
+        mapaCasas.put(
+                "INICIO_Professor Plum",
+                new Rectangle(760, 585, 65, 65)
+        );
+    }
     private void inicializarRetangulosComodos() {
         mapaCasas.put(
                 "COMODO_Cozinha",
@@ -607,6 +644,7 @@ public class GradeTabuleiro {
     public String getCasaClicada(int px, int py) {
         /*
          * Primeiro verifica os cômodos.
+         * Isso é importante porque os cômodos são áreas grandes.
          */
         for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
             String nome = e.getKey();
@@ -700,7 +738,24 @@ public class GradeTabuleiro {
     private boolean pontoPertenceAoComodo(String nomeComodo, int px, int py) {
         Rectangle base = mapaCasas.get(nomeComodo);
 
-        if (base == null || !base.contains(px, py)) {
+        boolean dentro = false;
+
+        if (base != null && base.contains(px, py)) {
+            dentro = true;
+        }
+
+        List<Rectangle> expansoes = expansoesComodos.get(nomeComodo);
+
+        if (!dentro && expansoes != null) {
+            for (Rectangle expansao : expansoes) {
+                if (expansao.contains(px, py)) {
+                    dentro = true;
+                    break;
+                }
+            }
+        }
+
+        if (!dentro) {
             return false;
         }
 
@@ -716,6 +771,8 @@ public class GradeTabuleiro {
 
         return true;
     }
+
+   
     private static void inicializarCasasRemovidas() {
         /*
          * Essas remoções aproximam a malha lógica do formato real do tabuleiro.

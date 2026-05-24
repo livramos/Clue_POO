@@ -46,7 +46,10 @@ public class JanelaTabuleiro extends JFrame {
 
         jogadores.add("Srta. Scarlet");
         jogadores.add("Coronel Mostarda");
+        jogadores.add("Sra. White");
+        jogadores.add("Sr. Green");
         jogadores.add("Sra. Peacock");
+        jogadores.add("Professor Plum");
 
         facade.prepararJogo(jogadores);
 
@@ -57,15 +60,37 @@ public class JanelaTabuleiro extends JFrame {
         adicionarCorredores(facade, corredores);
         adicionarComodos(facade);
         adicionarPortasComodos(facade);
+        adicionarCasasIniciais(facade);
 
         conectarCorredores(facade, corredores);
         conectarComodos(facade);
+        conectarCasasIniciais(facade);
 
         adicionarPassagensSecretas(facade);
 
         posicionarJogadoresIniciais(facade);
     }
+    private void adicionarCasasIniciais(ClueFacade facade) {
+        facade.adicionarCasa("INICIO_Srta. Scarlet");
+        facade.adicionarCasa("INICIO_Coronel Mostarda");
+        facade.adicionarCasa("INICIO_Sra. Peacock");
+        facade.adicionarCasa("INICIO_Sra. White");
+        facade.adicionarCasa("INICIO_Sr. Green");
+        facade.adicionarCasa("INICIO_Professor Plum");
+    }
+    private void conectarCasasIniciais(ClueFacade facade) {
+        facade.conectarCasas("INICIO_Srta. Scarlet", "L22C7");
 
+        facade.conectarCasas("INICIO_Coronel Mostarda", "L16C1");
+
+        facade.conectarCasas("INICIO_Sra. Peacock", "L5C22");
+
+        facade.conectarCasas("INICIO_Sra. White", "L0C14");
+
+        facade.conectarCasas("INICIO_Sr. Green", "L0C16");
+
+        facade.conectarCasas("INICIO_Professor Plum", "L18C22");
+    }
     private void adicionarCorredores(ClueFacade facade, Set<String> corredores) {
         for (String casa : corredores) {
             facade.adicionarCasa(casa);
@@ -165,15 +190,21 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     private void posicionarJogadoresIniciais(ClueFacade facade) {
-        facade.posicionarJogador("Srta. Scarlet", "COMODO_Cozinha");
-        facade.posicionarJogador("Coronel Mostarda", "COMODO_Sala de Musica");
-        facade.posicionarJogador("Sra. Peacock", "COMODO_Jardim de Inverno");
+        facade.posicionarJogador("Srta. Scarlet", "INICIO_Srta. Scarlet");
+        facade.posicionarJogador("Coronel Mostarda", "INICIO_Coronel Mostarda");
+        facade.posicionarJogador("Sra. White", "INICIO_Sra. White");
+        facade.posicionarJogador("Sr. Green", "INICIO_Sr. Green");
+        facade.posicionarJogador("Sra. Peacock", "INICIO_Sra. Peacock");
+        facade.posicionarJogador("Professor Plum", "INICIO_Professor Plum");
     }
 
     private void inicializarPioesNaTela() {
-        painelTabuleiro.moverPiao("Srta. Scarlet", "COMODO_Cozinha");
-        painelTabuleiro.moverPiao("Coronel Mostarda", "COMODO_Sala de Musica");
-        painelTabuleiro.moverPiao("Sra. Peacock", "COMODO_Jardim de Inverno");
+        painelTabuleiro.moverPiao("Srta. Scarlet", "INICIO_Srta. Scarlet");
+        painelTabuleiro.moverPiao("Coronel Mostarda", "INICIO_Coronel Mostarda");
+        painelTabuleiro.moverPiao("Sra. White", "INICIO_Sra. White");
+        painelTabuleiro.moverPiao("Sr. Green", "INICIO_Sr. Green");
+        painelTabuleiro.moverPiao("Sra. Peacock", "INICIO_Sra. Peacock");
+        painelTabuleiro.moverPiao("Professor Plum", "INICIO_Professor Plum");
 
         painelLateral.atualizarJogadorDaVez(
                 ClueFacade.getInstancia().getJogadorAtual()
