@@ -87,11 +87,6 @@ public class JanelaTabuleiro extends JFrame {
 
         facade.conectarCasas("INICIO_Sra. Peacock", "L5C22");
 
-        /*
-         * Corrigido:
-         * Antes estava L0C14, que fica perto do Sr. Green.
-         * A Sra. White deve sair pela casa perto do próprio spawn.
-         */
         facade.conectarCasas("INICIO_Sra. White", "L0C9");
 
         facade.conectarCasas("INICIO_Sr. Green", "L0C16");
@@ -129,11 +124,6 @@ public class JanelaTabuleiro extends JFrame {
 
         facade.adicionarCasa("L7C0");
 
-        /*
-         * Corrigido:
-         * Antes estava L17C6, que fica do outro lado do tabuleiro.
-         * A porta do Salão de Jogos deve ficar perto do Salão de Jogos.
-         */
         facade.adicionarCasa("L8C17");
 
         facade.adicionarCasa("L17C16");
@@ -177,10 +167,6 @@ public class JanelaTabuleiro extends JFrame {
 
         facade.conectarCasas("COMODO_Sala de Jantar", "L7C0");
 
-        /*
-         * Corrigido:
-         * Antes estava conectando o Salão de Jogos em L17C6.
-         */
         facade.conectarCasas("COMODO_Salao de Jogos", "L8C17");
 
         facade.conectarCasas("COMODO_Biblioteca", "L17C16");

@@ -524,13 +524,6 @@ public class GradeTabuleiro {
                 criarRetanguloAreaGrade(5, 1, 5, 5)
         );
 
-        /*
-         * SALA DE JANTAR
-         *
-         * Recorte no canto superior direito.
-         * Isso corrige a "escadinha" para a Sala de Jantar não pegar
-         * as casas L8C5, L8C6 e L8C7.
-         */
         adicionarRecorteComodo(
                 "COMODO_Sala de Jantar",
                 criarRetanguloAreaGrade(8, 5, 8, 7)
@@ -548,11 +541,6 @@ public class GradeTabuleiro {
                 criarRetanguloAreaGrade(0, 14, 0, 15)
         );
         removerArea(0, 14, 0, 15);
-
-        /*
-         * Como L0C8, L0C9, L0C14 e L0C15 precisam ser caminháveis,
-         * restauramos novamente depois dos removerArea acima.
-         */
         restaurar("L0C8");
         restaurar("L0C9");
         restaurar("L0C14");

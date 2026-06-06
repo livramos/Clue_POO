@@ -100,4 +100,56 @@ public class ClueFacade {
     public void usarPassagemSecretaJogadorDaVez() {
         modelo.usarPassagemSecretaJogadorDaVez();
     }
+    
+    public List<String> getCartasJogadorDaVez() {
+        return modelo.getNomesCartasJogadorDaVez();
+    }
+
+    public List<String> getSuspeitos() {
+        return modelo.getNomesSuspeitos();
+    }
+
+    public List<String> getArmas() {
+        return modelo.getNomesArmas();
+    }
+
+    public List<String> getComodos() {
+        return modelo.getNomesComodos();
+    }
+
+    public List<String> getSuspeitosFolhaJogadorDaVez() {
+        return modelo.getNomesSuspeitosFolhaJogadorDaVez();
+    }
+
+    public List<String> getArmasFolhaJogadorDaVez() {
+        return modelo.getNomesArmasFolhaJogadorDaVez();
+    }
+
+    public List<String> getComodosFolhaJogadorDaVez() {
+        return modelo.getNomesComodosFolhaJogadorDaVez();
+    }
+
+    public boolean cartaEstaMarcadaNaFolhaJogadorDaVez(String nomeCarta) {
+        return modelo.cartaEstaMarcadaNaFolhaJogadorDaVez(nomeCarta);
+    }
+
+    public void definirMarcacaoCartaNaFolhaJogadorDaVez(String nomeCarta, boolean marcada) {
+        modelo.definirMarcacaoCartaNaFolhaJogadorDaVez(nomeCarta, marcada);
+    }
+
+    public boolean jogadorDaVezEstaEmComodo() {
+        return modelo.jogadorDaVezEstaEmComodo();
+    }
+
+    public String getComodoAtualJogadorDaVez() {
+        return modelo.getComodoAtualJogadorDaVez();
+    }
+
+    public String realizarPalpite(String suspeito, String arma) {
+        return modelo.realizarPalpite(suspeito, arma);
+    }
+
+    public boolean realizarAcusacao(String suspeito, String arma, String comodo) {
+        return modelo.realizarAcusacao(suspeito, arma, comodo);
+    }
 }

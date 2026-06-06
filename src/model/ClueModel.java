@@ -42,13 +42,13 @@ public class ClueModel {
         List<Carta> comodos = new ArrayList<Carta>();
 
         comodos.add(new Carta("Cozinha", TipoCarta.COMODO));
-        comodos.add(new Carta("Salão de Baile", TipoCarta.COMODO));
+        comodos.add(new Carta("Sala de Musica", TipoCarta.COMODO));
         comodos.add(new Carta("Jardim de Inverno", TipoCarta.COMODO));
         comodos.add(new Carta("Sala de Jantar", TipoCarta.COMODO));
-        comodos.add(new Carta("Sala de Bilhar", TipoCarta.COMODO));
-        comodos.add(new Carta("Adega", TipoCarta.COMODO));
+        comodos.add(new Carta("Salao de Jogos", TipoCarta.COMODO));
+        comodos.add(new Carta("Escritorio", TipoCarta.COMODO));
         comodos.add(new Carta("Sala de Estar", TipoCarta.COMODO));
-        comodos.add(new Carta("Hall de Entrada", TipoCarta.COMODO));
+        comodos.add(new Carta("Entrada", TipoCarta.COMODO));
         comodos.add(new Carta("Biblioteca", TipoCarta.COMODO));
 
         return comodos;
@@ -111,8 +111,14 @@ public class ClueModel {
         }
 
         for (int i = 0; i < cartasRestantes.size(); i++) {
-            int jogadorAtual = i % jogadoresEmOrdemDaEsquerda.size();
-            jogadoresEmOrdemDaEsquerda.get(jogadorAtual).receberCarta(cartasRestantes.get(i));
+            int indiceJogador = i % jogadoresEmOrdemDaEsquerda.size();
+
+            Jogador jogador = jogadoresEmOrdemDaEsquerda.get(indiceJogador);
+            Carta carta = cartasRestantes.get(i);
+
+            jogador.receberCarta(carta);
+
+            jogador.getFolhaNotas().marcarCarta(carta.getNome());
         }
 
         indiceJogadorAtual = encontrarIndiceScarlet();
@@ -133,11 +139,25 @@ public class ClueModel {
     }
 
     public void passarTurno() {
-        indiceJogadorAtual = indiceJogadorAtual + 1;
-
-        if (indiceJogadorAtual >= jogadoresEmOrdemDaEsquerda.size()) {
-            indiceJogadorAtual = 0;
+        if (jogadoresEmOrdemDaEsquerda.isEmpty()) {
+            return;
         }
+
+        int tentativas = 0;
+
+        do {
+            indiceJogadorAtual = indiceJogadorAtual + 1;
+
+            if (indiceJogadorAtual >= jogadoresEmOrdemDaEsquerda.size()) {
+                indiceJogadorAtual = 0;
+            }
+
+            tentativas++;
+
+        } while (
+                jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual).estaEliminado()
+                && tentativas < jogadoresEmOrdemDaEsquerda.size()
+        );
     }
 
     public int[] lancarDados() {
@@ -189,14 +209,7 @@ public class ClueModel {
             throw new IllegalArgumentException("Casa não encontrada: " + nomeCasaDestino);
         }
 
-        Casa casaAtual = jogador.getCasaAtual();
-
-        if (casaAtual != null) {
-            casaAtual.desocupar();
-        }
-
-        destino.ocupar();
-        jogador.setCasaAtual(destino);
+        moverJogadorParaCasa(jogador, destino);
     }
 
     public int getQuantidadeCartasEnvelope() {
@@ -250,14 +263,7 @@ public class ClueModel {
             throw new IllegalArgumentException("Casa não encontrada: " + nomeCasaInicial);
         }
 
-        Casa casaAtual = jogadorAtual.getCasaAtual();
-
-        if (casaAtual != null) {
-            casaAtual.desocupar();
-        }
-
-        casaInicial.ocupar();
-        jogadorAtual.setCasaAtual(casaInicial);
+        moverJogadorParaCasa(jogadorAtual, casaInicial);
     }
 
     public void deslocarPiaoDaVez(String nomeCasaDestino) {
@@ -272,14 +278,7 @@ public class ClueModel {
             throw new IllegalArgumentException("Casa não encontrada: " + nomeCasaDestino);
         }
 
-        Casa casaAtual = jogadorAtual.getCasaAtual();
-
-        if (casaAtual != null) {
-            casaAtual.desocupar();
-        }
-
-        destino.ocupar();
-        jogadorAtual.setCasaAtual(destino);
+        moverJogadorParaCasa(jogadorAtual, destino);
     }
 
     public String getNomeCasaAtualDoJogadorDaVez() {
@@ -332,9 +331,167 @@ public class ClueModel {
         String nomeDestino = tabuleiro.getDestinoPassagemSecreta(nomeCasaAtual);
         Casa destino = tabuleiro.getCasa(nomeDestino);
 
-        jogadorAtual.getCasaAtual().desocupar();
-        destino.ocupar();
-        jogadorAtual.setCasaAtual(destino);
+        moverJogadorParaCasa(jogadorAtual, destino);
+    }
+    private boolean ehComodo(Casa casa) {
+        return casa != null && casa.getNome().startsWith("COMODO_");
+    }
+
+    private String removerPrefixoComodo(String nomeCasa) {
+        if (nomeCasa == null) {
+            return null;
+        }
+
+        return nomeCasa.replace("COMODO_", "");
+    }
+
+    private void moverJogadorParaCasa(Jogador jogador, Casa destino) {
+        Casa casaAtual = jogador.getCasaAtual();
+
+        if (casaAtual != null && !ehComodo(casaAtual)) {
+            casaAtual.desocupar();
+        }
+
+        if (!ehComodo(destino)) {
+            destino.ocupar();
+        }
+
+        jogador.setCasaAtual(destino);
+    }
+
+    private List<String> converterCartasParaNomes(List<Carta> cartas) {
+        List<String> nomes = new ArrayList<String>();
+
+        for (Carta carta : cartas) {
+            nomes.add(carta.getNome());
+        }
+
+        return nomes;
+    }
+
+    public List<String> getNomesCartasJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        return jogadorAtual.getNomesCartas();
+    }
+
+    public List<String> getNomesSuspeitos() {
+        return converterCartasParaNomes(criarSuspeitos());
+    }
+
+    public List<String> getNomesArmas() {
+        return converterCartasParaNomes(criarArmas());
+    }
+
+    public List<String> getNomesComodos() {
+        return converterCartasParaNomes(criarComodos());
+    }
+
+    public List<String> getNomesSuspeitosFolhaJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        return converterCartasParaNomes(jogadorAtual.getFolhaNotas().getSuspeitos());
+    }
+
+    public List<String> getNomesArmasFolhaJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        return converterCartasParaNomes(jogadorAtual.getFolhaNotas().getArmas());
+    }
+
+    public List<String> getNomesComodosFolhaJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        return converterCartasParaNomes(jogadorAtual.getFolhaNotas().getComodos());
+    }
+
+    public boolean cartaEstaMarcadaNaFolhaJogadorDaVez(String nomeCarta) {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        return jogadorAtual.getFolhaNotas().cartaEstaMarcada(nomeCarta);
+    }
+
+    public void definirMarcacaoCartaNaFolhaJogadorDaVez(String nomeCarta, boolean marcada) {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        jogadorAtual.getFolhaNotas().definirMarcacaoCarta(nomeCarta, marcada);
+    }
+
+    public boolean jogadorDaVezEstaEmComodo() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        return ehComodo(jogadorAtual.getCasaAtual());
+    }
+
+    public String getComodoAtualJogadorDaVez() {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        if (!ehComodo(jogadorAtual.getCasaAtual())) {
+            return null;
+        }
+
+        return removerPrefixoComodo(jogadorAtual.getCasaAtual().getNome());
+    }
+    public String realizarPalpite(String suspeito, String arma) {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        if (!ehComodo(jogadorAtual.getCasaAtual())) {
+            throw new IllegalArgumentException("O jogador precisa estar em um cômodo para dar palpite.");
+        }
+
+        String comodo = removerPrefixoComodo(jogadorAtual.getCasaAtual().getNome());
+
+        Jogador suspeitoComoJogador = jogadoresPorNome.get(suspeito);
+
+        if (suspeitoComoJogador != null) {
+            moverJogadorParaCasa(suspeitoComoJogador, jogadorAtual.getCasaAtual());
+        }
+
+        String[] cartasDoPalpite = { suspeito, arma, comodo };
+
+        for (int deslocamento = 1; deslocamento < jogadoresEmOrdemDaEsquerda.size(); deslocamento++) {
+            int indice = (indiceJogadorAtual + deslocamento) % jogadoresEmOrdemDaEsquerda.size();
+
+            Jogador jogador = jogadoresEmOrdemDaEsquerda.get(indice);
+
+            for (String cartaPalpite : cartasDoPalpite) {
+                if (jogador.possuiCarta(cartaPalpite)) {
+                    return jogador.getNome() + " pode mostrar uma carta.";
+                }
+            }
+        }
+
+        return "Nenhum jogador conseguiu refutar o palpite.";
+    }
+
+    public boolean realizarAcusacao(String suspeito, String arma, String comodo) {
+        Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
+
+        boolean suspeitoCorreto = false;
+        boolean armaCorreta = false;
+        boolean comodoCorreto = false;
+
+        for (Carta carta : envelopeConfidencial) {
+            if (carta.getNome().equals(suspeito)) {
+                suspeitoCorreto = true;
+            }
+
+            if (carta.getNome().equals(arma)) {
+                armaCorreta = true;
+            }
+
+            if (carta.getNome().equals(comodo)) {
+                comodoCorreto = true;
+            }
+        }
+
+        boolean acusacaoCorreta = suspeitoCorreto && armaCorreta && comodoCorreto;
+
+        if (!acusacaoCorreta) {
+            jogadorAtual.eliminarPorAcusacaoErrada();
+        }
+
+        return acusacaoCorreta;
     }
     
 }

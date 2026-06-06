@@ -12,6 +12,7 @@ import java.util.Set;
 class Tabuleiro {
     private Map<String, Casa> casas;
     private Map<String, String> passagensSecretas;
+
     Tabuleiro() {
         this.casas = new HashMap<String, Casa>();
         this.passagensSecretas = new HashMap<String, String>();
@@ -37,6 +38,7 @@ class Tabuleiro {
                 nomeCasa2 + " existe? " + (casa2 != null)
             );
         }
+
         casa1.adicionarCasaAdjacente(casa2);
         casa2.adicionarCasaAdjacente(casa1);
     }
@@ -56,9 +58,12 @@ class Tabuleiro {
 
     String getDestinoPassagemSecreta(String nomeCasa) {
         return passagensSecretas.get(nomeCasa);
-    } 
-    
-    
+    }
+
+    private boolean ehComodo(Casa casa) {
+        return casa != null && casa.getNome().startsWith("COMODO_");
+    }
+
     List<Casa> mapearCasasAlcancaveis(Casa casaInicial, int valorDados) {
         List<Casa> casasAlcancaveis = new ArrayList<Casa>();
         Set<Casa> casasVisitadas = new HashSet<Casa>();
@@ -82,6 +87,16 @@ class Tabuleiro {
             }
 
             /*
+             * Regra do Clue:
+             * assim que o jogador entra em um cômodo, ele para de se mover.
+             * Portanto, se a casa atual é um cômodo alcançado durante o caminho,
+             * não continuamos expandindo a busca a partir dele.
+             */
+            if (ehComodo(casaAtual) && distanciaAtual > 0) {
+                continue;
+            }
+
+            /*
              * Só continua expandindo caminhos enquanto ainda houver passos disponíveis.
              */
             if (distanciaAtual < valorDados) {
@@ -96,7 +111,15 @@ class Tabuleiro {
                         continue;
                     }
 
-                    if (!casasVisitadas.contains(adjacente) && !adjacente.estaOcupada()) {
+                    /*
+                     * Corredores ocupados bloqueiam passagem.
+                     * Cômodos não são bloqueados por ocupação, porque vários personagens
+                     * podem ficar no mesmo cômodo.
+                     */
+                    boolean destinoEhComodo = ehComodo(adjacente);
+                    boolean destinoBloqueado = adjacente.estaOcupada() && !destinoEhComodo;
+
+                    if (!casasVisitadas.contains(adjacente) && !destinoBloqueado) {
                         casasVisitadas.add(adjacente);
                         fila.add(new CasaComDistancia(adjacente, distanciaAtual + 1));
                     }

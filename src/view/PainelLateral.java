@@ -27,7 +27,7 @@ public class PainelLateral extends JPanel {
     private JButton botaoAcusar;
     private JButton botaoSalvarJogo;
     private JButton botaoJogarDados;
-    private JButton botaoEscolherDados;
+    
 
     private Image[] imagensDados;
 
@@ -66,36 +66,42 @@ public class PainelLateral extends JPanel {
         botaoPassagemSecreta.setEnabled(false);
         botaoProximo.setEnabled(true);
 
+        botaoPalpite.setEnabled(
+                ClueFacade.getInstancia().jogadorDaVezEstaEmComodo()
+        );
+
+        botaoAcusar.setEnabled(true);
+
         repaint();
     }
 
     private void carregarImagens() {
         imagensDados = new Image[7];
 
-        imagensDados[1] = new ImageIcon("imagens/Tabuleiros/dado1.jpg").getImage();
-        imagensDados[2] = new ImageIcon("imagens/Tabuleiros/dado2.jpg").getImage();
-        imagensDados[3] = new ImageIcon("imagens/Tabuleiros/dado3.jpg").getImage();
-        imagensDados[4] = new ImageIcon("imagens/Tabuleiros/dado4.jpg").getImage();
-        imagensDados[5] = new ImageIcon("imagens/Tabuleiros/dado5.jpg").getImage();
-        imagensDados[6] = new ImageIcon("imagens/Tabuleiros/dado6.jpg").getImage();
+        imagensDados[1] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado1.jpg")).getImage();
+        imagensDados[2] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado2.jpg")).getImage();
+        imagensDados[3] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado3.jpg")).getImage();
+        imagensDados[4] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado4.jpg")).getImage();
+        imagensDados[5] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado5.jpg")).getImage();
+        imagensDados[6] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado6.jpg")).getImage();
     }
 
     private void criarBotoes() {
-        botaoPassagemSecreta = new JButton("Passagem Secreta");
-        botaoProximo = new JButton("Próximo");
-        botaoMostrarCartas = new JButton("Mostrar Cartas");
-        botaoBlocoNotas = new JButton("Bloco de Notas");
-        botaoPalpite = new JButton("Palpite");
-        botaoAcusar = new JButton("Acusar");
-        botaoSalvarJogo = new JButton("Salvar Jogo");
-        botaoJogarDados = new JButton("Jogar Dados");
-        botaoEscolherDados = new JButton("Escolher Dados");
+    	    botaoPassagemSecreta = new JButton("Passagem Secreta");
+    	    botaoProximo = new JButton("Próximo");
+    	    botaoMostrarCartas = new JButton("Mostrar Cartas");
+    	    botaoBlocoNotas = new JButton("Bloco de Notas");
+    	    botaoPalpite = new JButton("Palpite");
+    	    botaoAcusar = new JButton("Acusar");
+    	    botaoSalvarJogo = new JButton("Salvar Jogo");
+    	    botaoJogarDados = new JButton("Jogar Dados");
 
-        botaoProximo.setEnabled(false);
-        botaoPalpite.setEnabled(false);
-        botaoAcusar.setEnabled(false);
-        botaoEscolherDados.setEnabled(false);
-    }
+    	    botaoProximo.setEnabled(false);
+    	    botaoPalpite.setEnabled(false);
+    	    botaoAcusar.setEnabled(true);
+   }
+        
+
 
     private void posicionarBotoes() {
         botaoPassagemSecreta.setBounds(20, 20, 180, 35);
@@ -107,7 +113,7 @@ public class PainelLateral extends JPanel {
         botaoSalvarJogo.setBounds(20, 300, 180, 35);
 
         botaoJogarDados.setBounds(20, 580, 180, 35);
-        botaoEscolherDados.setBounds(20, 625, 180, 35);
+       
 
         add(botaoPassagemSecreta);
         add(botaoProximo);
@@ -117,7 +123,7 @@ public class PainelLateral extends JPanel {
         add(botaoAcusar);
         add(botaoSalvarJogo);
         add(botaoJogarDados);
-        add(botaoEscolherDados);
+        
     }
 
     private void configurarEventos() {
@@ -136,6 +142,30 @@ public class PainelLateral extends JPanel {
         botaoPassagemSecreta.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 usarPassagemSecreta();
+            }
+        });
+
+        botaoMostrarCartas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mostrarCartas();
+            }
+        });
+
+        botaoBlocoNotas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirBlocoNotas();
+            }
+        });
+
+        botaoPalpite.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirPalpite();
+            }
+        });
+
+        botaoAcusar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirAcusacao();
             }
         });
     }
@@ -187,6 +217,12 @@ public class PainelLateral extends JPanel {
         }
 
         atualizarEstadoPassagemSecreta();
+        
+        botaoPalpite.setEnabled(
+                ClueFacade.getInstancia().jogadorDaVezEstaEmComodo()
+        );
+
+        botaoAcusar.setEnabled(true);
 
         repaint();
     }
@@ -263,5 +299,40 @@ public class PainelLateral extends JPanel {
 
     public int getDado2() {
         return dado2;
+    }
+    
+    private void mostrarCartas() {
+        ClueFacade facade = ClueFacade.getInstancia();
+
+        JanelaCartas janela = new JanelaCartas(
+                facade.getJogadorAtual(),
+                facade.getCartasJogadorDaVez()
+        );
+
+        janela.setVisible(true);
+    }
+
+    private void abrirBlocoNotas() {
+        ClueFacade facade = ClueFacade.getInstancia();
+
+        JanelaFolhasNotas janela = new JanelaFolhasNotas(
+                facade.getJogadorAtual()
+        );
+
+        janela.setVisible(true);
+    }
+
+    private void abrirPalpite() {
+        if (!ClueFacade.getInstancia().jogadorDaVezEstaEmComodo()) {
+            return;
+        }
+
+        JanelaPalpite janela = new JanelaPalpite(painelTabuleiro);
+        janela.setVisible(true);
+    }
+
+    private void abrirAcusacao() {
+        JanelaAcusacao janela = new JanelaAcusacao();
+        janela.setVisible(true);
     }
 }

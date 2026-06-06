@@ -43,7 +43,7 @@ public class PainelTabuleiro extends JPanel {
         setBackground(Color.GRAY);
 
         imagemTabuleiro =
-                new ImageIcon("imagens/Tabuleiros/Tabuleiro-Clue-A.jpg").getImage();
+                new ImageIcon(getClass().getResource("/imagens/Tabuleiros/Tabuleiro-Clue-A.jpg")).getImage();
 
         grade = new GradeTabuleiro();
 
