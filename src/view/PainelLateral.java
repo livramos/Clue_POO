@@ -5,19 +5,26 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-import model.ClueFacade;
+import controller.ClueController;
 
 public class PainelLateral extends JPanel {
+
+    // =========================================================
+    // Botões
+    // =========================================================
 
     private JButton botaoPassagemSecreta;
     private JButton botaoProximo;
@@ -29,45 +36,39 @@ public class PainelLateral extends JPanel {
     private JButton botaoJogarDados;
     private JButton botaoEscolherDados;
 
-    private Image[] imagensDados;
+    // =========================================================
+    // Estado de renderização
+    // =========================================================
 
+    private Image[] imagensDados;
     private String jogadorDaVez;
     private int dado1;
     private int dado2;
-    private boolean dadosJaLancados;
 
-    private PainelTabuleiro painelTabuleiro;
+    // =========================================================
+    // Construtor
+    // =========================================================
 
     public PainelLateral() {
         setPreferredSize(new Dimension(220, 900));
         setBackground(Color.LIGHT_GRAY);
         setLayout(null);
 
-        jogadorDaVez = ClueFacade.getInstancia().getJogadorAtual();
+        jogadorDaVez = "";
         dado1 = 1;
         dado2 = 1;
-        dadosJaLancados = false;
 
         carregarImagens();
         criarBotoes();
         posicionarBotoes();
         configurarEventos();
-        atualizarEstadoPassagemSecreta();
+
+        // O ClueController define os estados corretos ao chamar iniciarTurno()
     }
 
-    public void setPainelTabuleiro(PainelTabuleiro painelTabuleiro) {
-        this.painelTabuleiro = painelTabuleiro;
-    }
-
-    public void onMovimentoConcluido() {
-        dadosJaLancados = false;
-
-        botaoJogarDados.setEnabled(false);
-        botaoPassagemSecreta.setEnabled(false);
-        botaoProximo.setEnabled(true);
-
-        repaint();
-    }
+    // =========================================================
+    // Inicialização
+    // =========================================================
 
     private void carregarImagens() {
         imagensDados = new Image[7];
@@ -82,15 +83,17 @@ public class PainelLateral extends JPanel {
 
     private void criarBotoes() {
         botaoPassagemSecreta = new JButton("Passagem Secreta");
-        botaoProximo = new JButton("Próximo");
-        botaoMostrarCartas = new JButton("Mostrar Cartas");
-        botaoBlocoNotas = new JButton("Bloco de Notas");
-        botaoPalpite = new JButton("Palpite");
-        botaoAcusar = new JButton("Acusar");
-        botaoSalvarJogo = new JButton("Salvar Jogo");
-        botaoJogarDados = new JButton("Jogar Dados");
-        botaoEscolherDados = new JButton("Escolher Dados");
+        botaoProximo         = new JButton("Próximo");
+        botaoMostrarCartas   = new JButton("Mostrar Cartas");
+        botaoBlocoNotas      = new JButton("Bloco de Notas");
+        botaoPalpite         = new JButton("Palpite");
+        botaoAcusar          = new JButton("Acusar");
+        botaoSalvarJogo      = new JButton("Salvar Jogo");
+        botaoJogarDados      = new JButton("Jogar Dados");
+        botaoEscolherDados   = new JButton("Escolher Dados");
 
+        // Estado inicial conservador; ClueController.iniciarTurno() irá corrigir
+        botaoPassagemSecreta.setEnabled(false);
         botaoProximo.setEnabled(false);
         botaoPalpite.setEnabled(false);
         botaoAcusar.setEnabled(false);
@@ -98,16 +101,15 @@ public class PainelLateral extends JPanel {
     }
 
     private void posicionarBotoes() {
-        botaoPassagemSecreta.setBounds(20, 20, 180, 35);
-        botaoProximo.setBounds(20, 65, 180, 35);
-        botaoMostrarCartas.setBounds(20, 110, 180, 35);
-        botaoBlocoNotas.setBounds(20, 155, 180, 35);
-        botaoPalpite.setBounds(20, 200, 180, 35);
-        botaoAcusar.setBounds(20, 245, 180, 35);
-        botaoSalvarJogo.setBounds(20, 300, 180, 35);
-
-        botaoJogarDados.setBounds(20, 580, 180, 35);
-        botaoEscolherDados.setBounds(20, 625, 180, 35);
+        botaoPassagemSecreta.setBounds(20,  20, 180, 35);
+        botaoProximo        .setBounds(20,  65, 180, 35);
+        botaoMostrarCartas  .setBounds(20, 110, 180, 35);
+        botaoBlocoNotas     .setBounds(20, 155, 180, 35);
+        botaoPalpite        .setBounds(20, 200, 180, 35);
+        botaoAcusar         .setBounds(20, 245, 180, 35);
+        botaoSalvarJogo     .setBounds(20, 300, 180, 35);
+        botaoJogarDados     .setBounds(20, 580, 180, 35);
+        botaoEscolherDados  .setBounds(20, 625, 180, 35);
 
         add(botaoPassagemSecreta);
         add(botaoProximo);
@@ -120,104 +122,145 @@ public class PainelLateral extends JPanel {
         add(botaoEscolherDados);
     }
 
+    /**
+     * Toda ação de jogo é delegada ao ClueController.
+     * O painel não contém mais nenhuma lógica de estado.
+     */
     private void configurarEventos() {
         botaoJogarDados.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                jogarDados();
+                ClueController.getInstancia().onLancarDados();
+            }
+        });
+
+        botaoEscolherDados.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                escolherDadosManualmente();
             }
         });
 
         botaoProximo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                passarTurno();
+                ClueController.getInstancia().onPassarTurno();
             }
         });
 
         botaoPassagemSecreta.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                usarPassagemSecreta();
+                ClueController.getInstancia().onUsarPassagemSecreta();
+            }
+        });
+
+        botaoPalpite.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ClueController.getInstancia().onFazerPalpite();
+            }
+        });
+
+        botaoAcusar.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                ClueController.getInstancia().onFazerAcusacao();
             }
         });
     }
 
-    private void jogarDados() {
-        if (dadosJaLancados) {
+    // =========================================================
+    // API chamada pelo ClueController para atualizar a view
+    // =========================================================
+
+    /** Atualiza as imagens dos dados e repinta o painel. */
+    public void exibirDados(int d1, int d2) {
+        this.dado1 = d1;
+        this.dado2 = d2;
+        repaint();
+    }
+
+    /** Atualiza o nome do jogador exibido e repinta. */
+    public void atualizarJogadorDaVez(String jogadorDaVez) {
+        this.jogadorDaVez = jogadorDaVez;
+        repaint();
+    }
+
+    public void setBotaoJogarDadosHabilitado(boolean habilitado) {
+        botaoJogarDados.setEnabled(habilitado);
+    }
+
+    public void setBotaoEscolherDadosHabilitado(boolean habilitado) {
+        botaoEscolherDados.setEnabled(habilitado);
+    }
+
+    public void setBotaoPassagemSecretaHabilitado(boolean habilitado) {
+        botaoPassagemSecreta.setEnabled(habilitado);
+    }
+
+    public void setBotaoProximoHabilitado(boolean habilitado) {
+        botaoProximo.setEnabled(habilitado);
+    }
+
+    public void setBotaoPalpiteHabilitado(boolean habilitado) {
+        botaoPalpite.setEnabled(habilitado);
+    }
+
+    public void setBotaoAcusarHabilitado(boolean habilitado) {
+        botaoAcusar.setEnabled(habilitado);
+    }
+
+    // =========================================================
+    // Getters auxiliares
+    // =========================================================
+
+    public int getDado1()       { return dado1; }
+    public int getDado2()       { return dado2; }
+    public int getTotalPassos() { return dado1 + dado2; }
+
+    // =========================================================
+    // Diálogo "Escolher Dados" (responsabilidade da view)
+    // =========================================================
+
+    private void escolherDadosManualmente() {
+        JTextField campo1 = new JTextField("1");
+        JTextField campo2 = new JTextField("1");
+
+        JPanel painel = new JPanel(new GridLayout(2, 2, 5, 5));
+        painel.add(new JLabel("Dado 1 (1-6):"));
+        painel.add(campo1);
+        painel.add(new JLabel("Dado 2 (1-6):"));
+        painel.add(campo2);
+
+        int resposta = JOptionPane.showConfirmDialog(
+                this,
+                painel,
+                "Escolher Dados",
+                JOptionPane.OK_CANCEL_OPTION
+        );
+
+        if (resposta != JOptionPane.OK_OPTION) {
             return;
         }
 
-        ClueFacade facade = ClueFacade.getInstancia();
-
-        int[] resultado = facade.lancarDados();
-
-        dado1 = resultado[0];
-        dado2 = resultado[1];
-        dadosJaLancados = true;
-
-        botaoJogarDados.setEnabled(false);
-        botaoPassagemSecreta.setEnabled(false);
-
-        String casaAtual = facade.getCasaAtualDoJogador();
-
-        if (casaAtual != null && painelTabuleiro != null) {
-            List<String> alcancaveis =
-                    facade.getCasasAlcancaveis(casaAtual, resultado);
-
-            painelTabuleiro.destacarCasasAlcancaveis(alcancaveis);
-        }
-
-        repaint();
-    }
-
-    private void passarTurno() {
-        ClueFacade facade = ClueFacade.getInstancia();
-
-        facade.passarTurno();
-
-        jogadorDaVez = facade.getJogadorAtual();
-
-        dado1 = 1;
-        dado2 = 1;
-        dadosJaLancados = false;
-
-        botaoProximo.setEnabled(false);
-        botaoJogarDados.setEnabled(true);
-
-        if (painelTabuleiro != null) {
-            painelTabuleiro.limparDestaques();
-        }
-
-        atualizarEstadoPassagemSecreta();
-
-        repaint();
-    }
-    
-    private void usarPassagemSecreta() {
         try {
-            ClueFacade facade = ClueFacade.getInstancia();
+            int d1 = Integer.parseInt(campo1.getText().trim());
+            int d2 = Integer.parseInt(campo2.getText().trim());
 
-            String jogador = facade.getJogadorAtual();
+            // Garante que os valores estão no intervalo [1, 6]
+            d1 = Math.min(6, Math.max(1, d1));
+            d2 = Math.min(6, Math.max(1, d2));
 
-            facade.usarPassagemSecretaJogadorDaVez();
+            ClueController.getInstancia().onLancarDadosComValores(d1, d2);
 
-            String destino = facade.getCasaAtualDoJogador();
-
-            if (painelTabuleiro != null) {
-                painelTabuleiro.moverPiao(jogador, destino);
-                painelTabuleiro.limparDestaques();
-            }
-
-            onMovimentoConcluido();
-
-        } catch (IllegalArgumentException ex) {
-            // Se não puder usar passagem secreta, não faz nada.
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Insira números inteiros entre 1 e 6.",
+                    "Valor inválido",
+                    JOptionPane.ERROR_MESSAGE
+            );
         }
     }
 
-    private void atualizarEstadoPassagemSecreta() {
-        botaoPassagemSecreta.setEnabled(
-                ClueFacade.getInstancia().jogadorDaVezTemPassagemSecreta()
-        );
-    }
+    // =========================================================
+    // Renderização
+    // =========================================================
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -244,24 +287,7 @@ public class PainelLateral extends JPanel {
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         g2.drawString(passos + " Passo(s)", 75, 420);
 
-        g2.drawImage(imagensDados[dado1], 20, 440, 80, 80, null);
+        g2.drawImage(imagensDados[dado1], 20,  440, 80, 80, null);
         g2.drawImage(imagensDados[dado2], 120, 440, 80, 80, null);
-    }
-
-    public void atualizarJogadorDaVez(String jogadorDaVez) {
-        this.jogadorDaVez = jogadorDaVez;
-        repaint();
-    }
-
-    public int getTotalPassos() {
-        return dado1 + dado2;
-    }
-
-    public int getDado1() {
-        return dado1;
-    }
-
-    public int getDado2() {
-        return dado2;
     }
 }

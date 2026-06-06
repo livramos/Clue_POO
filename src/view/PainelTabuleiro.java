@@ -16,13 +16,12 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import model.ClueFacade;
+import controller.ClueController;
 
 public class PainelTabuleiro extends JPanel {
 
     private Image imagemTabuleiro;
     private GradeTabuleiro grade;
-    private PainelLateral painelLateral;
 
     private Map<String, String> posicoesPioes;
     private Map<String, Color> coresPioes;
@@ -31,6 +30,10 @@ public class PainelTabuleiro extends JPanel {
     private static final int TABULEIRO_Y = 20;
     private static final int TABULEIRO_LARGURA = 850;
     private static final int TABULEIRO_ALTURA = 820;
+
+    // =========================================================
+    // Construtor
+    // =========================================================
 
     public PainelTabuleiro() {
         setPreferredSize(
@@ -48,21 +51,21 @@ public class PainelTabuleiro extends JPanel {
         grade = new GradeTabuleiro();
 
         posicoesPioes = new HashMap<String, String>();
-        coresPioes = new HashMap<String, Color>();
+        coresPioes    = new HashMap<String, Color>();
 
-        coresPioes.put("Srta. Scarlet", Color.RED);
-        coresPioes.put("Coronel Mostarda", Color.YELLOW);
-        coresPioes.put("Sra. White", Color.WHITE);
-        coresPioes.put("Sr. Green", new Color(30, 160, 30));
-        coresPioes.put("Sra. Peacock", Color.BLUE);
-        coresPioes.put("Professor Plum", new Color(120, 40, 160));
+        coresPioes.put("Srta. Scarlet",     Color.RED);
+        coresPioes.put("Coronel Mostarda",  Color.YELLOW);
+        coresPioes.put("Sra. White",        Color.WHITE);
+        coresPioes.put("Sr. Green",         new Color(30, 160, 30));
+        coresPioes.put("Sra. Peacock",      Color.BLUE);
+        coresPioes.put("Professor Plum",    new Color(120, 40, 160));
 
         registrarCliqueMouse();
     }
 
-    public void setPainelLateral(PainelLateral painelLateral) {
-        this.painelLateral = painelLateral;
-    }
+    // =========================================================
+    // API pública (usada pelo ClueController e JanelaTabuleiro)
+    // =========================================================
 
     public void destacarCasasAlcancaveis(List<String> casas) {
         grade.destacarCasas(casas);
@@ -78,6 +81,10 @@ public class PainelTabuleiro extends JPanel {
         posicoesPioes.put(jogador, casa);
         repaint();
     }
+
+    // =========================================================
+    // Tratamento de clique do mouse
+    // =========================================================
 
     private void registrarCliqueMouse() {
         addMouseListener(new MouseAdapter() {
@@ -104,35 +111,16 @@ public class PainelTabuleiro extends JPanel {
 
         System.out.println("Destino final: " + destino);
 
-        tentarMoverJogadorAtual(destino);
+        /*
+         * Toda a validação e atualização de estado é responsabilidade
+         * do ClueController. O painel apenas informa o destino clicado.
+         */
+        ClueController.getInstancia().onJogadorMoveu(destino);
     }
 
-    private void tentarMoverJogadorAtual(String destino) {
-        try {
-            ClueFacade facade = ClueFacade.getInstancia();
-
-            String jogadorAtual = facade.getJogadorAtual();
-
-            facade.moverJogadorAtual(destino);
-
-            moverPiao(jogadorAtual, destino);
-
-            grade.limparDestaques();
-
-            if (painelLateral != null) {
-                painelLateral.onMovimentoConcluido();
-            }
-
-            repaint();
-
-        } catch (IllegalArgumentException ex) {
-            /*
-             * Movimento inválido:
-             * não move, não troca jogador e não mostra mensagem,
-             * conforme o enunciado pediu.
-             */
-        }
-    }
+    // =========================================================
+    // Renderização
+    // =========================================================
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -147,9 +135,7 @@ public class PainelTabuleiro extends JPanel {
 
         desenharFundo(g2);
         desenharImagemTabuleiro(g2);
-
         grade.desenharDestaques(g2);
-
         desenharPioes(g2);
     }
 
@@ -174,7 +160,7 @@ public class PainelTabuleiro extends JPanel {
     private void desenharPioes(Graphics2D g2) {
         for (Map.Entry<String, String> entrada : posicoesPioes.entrySet()) {
             String jogador = entrada.getKey();
-            String casa = entrada.getValue();
+            String casa    = entrada.getValue();
 
             Rectangle r = grade.getRetanguloCasaOuComodo(casa);
 
@@ -188,9 +174,8 @@ public class PainelTabuleiro extends JPanel {
                 cor = Color.GRAY;
             }
 
-            int d = calcularTamanhoPiao(casa, r);
-
-            int cx = r.x + (r.width - d) / 2;
+            int d  = calcularTamanhoPiao(casa, r);
+            int cx = r.x + (r.width  - d) / 2;
             int cy = r.y + (r.height - d) / 2;
 
             g2.setColor(cor);
@@ -208,13 +193,8 @@ public class PainelTabuleiro extends JPanel {
 
         int d = Math.min(r.width, r.height) - 6;
 
-        if (d < 10) {
-            d = 10;
-        }
-
-        if (d > 24) {
-            d = 24;
-        }
+        if (d < 10) d = 10;
+        if (d > 24) d = 24;
 
         return d;
     }
