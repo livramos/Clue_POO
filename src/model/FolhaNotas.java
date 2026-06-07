@@ -43,6 +43,14 @@ class FolhaNotas {
 
         return marcacoes.get(nomeCarta);
     }
+    
+    void definirMarcacaoCarta(String nomeCarta, boolean marcada) {
+        if (!marcacoes.containsKey(nomeCarta)) {
+            throw new IllegalArgumentException("Carta não existe na folha: " + nomeCarta);
+        }
+
+        marcacoes.put(nomeCarta, marcada);
+    }
 
     List<Carta> getSuspeitos() {
         return suspeitos;

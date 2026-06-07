@@ -19,11 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import controller.ClueController;
+import model.ClueFacade;
 
 public class PainelLateral extends JPanel {
 
     // =========================================================
-    // Botões
+    // Botoes
     // =========================================================
 
     private JButton botaoPassagemSecreta;
@@ -37,13 +38,13 @@ public class PainelLateral extends JPanel {
     private JButton botaoEscolherDados;
 
     // =========================================================
-    // Estado de renderização
+    // Estado de renderizacao
     // =========================================================
 
     private Image[] imagensDados;
-    private String jogadorDaVez;
-    private int dado1;
-    private int dado2;
+    private String  jogadorDaVez;
+    private int     dado1;
+    private int     dado2;
 
     // =========================================================
     // Construtor
@@ -67,23 +68,22 @@ public class PainelLateral extends JPanel {
     }
 
     // =========================================================
-    // Inicialização
+    // Inicializacao
     // =========================================================
 
     private void carregarImagens() {
         imagensDados = new Image[7];
-
-        imagensDados[1] = new ImageIcon("imagens/Tabuleiros/dado1.jpg").getImage();
-        imagensDados[2] = new ImageIcon("imagens/Tabuleiros/dado2.jpg").getImage();
-        imagensDados[3] = new ImageIcon("imagens/Tabuleiros/dado3.jpg").getImage();
-        imagensDados[4] = new ImageIcon("imagens/Tabuleiros/dado4.jpg").getImage();
-        imagensDados[5] = new ImageIcon("imagens/Tabuleiros/dado5.jpg").getImage();
-        imagensDados[6] = new ImageIcon("imagens/Tabuleiros/dado6.jpg").getImage();
+        imagensDados[1] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado1.jpg")).getImage();
+        imagensDados[2] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado2.jpg")).getImage();
+        imagensDados[3] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado3.jpg")).getImage();
+        imagensDados[4] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado4.jpg")).getImage();
+        imagensDados[5] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado5.jpg")).getImage();
+        imagensDados[6] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado6.jpg")).getImage();
     }
 
     private void criarBotoes() {
         botaoPassagemSecreta = new JButton("Passagem Secreta");
-        botaoProximo         = new JButton("Próximo");
+        botaoProximo         = new JButton("Proximo");
         botaoMostrarCartas   = new JButton("Mostrar Cartas");
         botaoBlocoNotas      = new JButton("Bloco de Notas");
         botaoPalpite         = new JButton("Palpite");
@@ -92,12 +92,11 @@ public class PainelLateral extends JPanel {
         botaoJogarDados      = new JButton("Jogar Dados");
         botaoEscolherDados   = new JButton("Escolher Dados");
 
-        // Estado inicial conservador; ClueController.iniciarTurno() irá corrigir
+        // Estado inicial conservador; ClueController.iniciarTurno() ira corrigir
         botaoPassagemSecreta.setEnabled(false);
         botaoProximo.setEnabled(false);
         botaoPalpite.setEnabled(false);
-        botaoAcusar.setEnabled(false);
-        botaoEscolherDados.setEnabled(false);
+        botaoAcusar.setEnabled(true);
     }
 
     private void posicionarBotoes() {
@@ -123,8 +122,8 @@ public class PainelLateral extends JPanel {
     }
 
     /**
-     * Toda ação de jogo é delegada ao ClueController.
-     * O painel não contém mais nenhuma lógica de estado.
+     * Toda acao de jogo e delegada ao ClueController.
+     * O painel nao contem mais nenhuma logica de estado.
      */
     private void configurarEventos() {
         botaoJogarDados.addActionListener(new ActionListener() {
@@ -162,20 +161,45 @@ public class PainelLateral extends JPanel {
                 ClueController.getInstancia().onFazerAcusacao();
             }
         });
+
+        botaoMostrarCartas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mostrarCartas();
+            }
+        });
+
+        botaoBlocoNotas.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                abrirBlocoNotas();
+            }
+        });
+    }
+
+    // =========================================================
+    // Janelas auxiliares (da branch Observer)
+    // =========================================================
+
+    private void mostrarCartas() {
+        ClueFacade facade = ClueFacade.getInstancia();
+        new JanelaCartas(facade.getJogadorAtual(), facade.getCartasJogadorDaVez())
+                .setVisible(true);
+    }
+
+    private void abrirBlocoNotas() {
+        ClueFacade facade = ClueFacade.getInstancia();
+        new JanelaFolhasNotas(facade.getJogadorAtual()).setVisible(true);
     }
 
     // =========================================================
     // API chamada pelo ClueController para atualizar a view
     // =========================================================
 
-    /** Atualiza as imagens dos dados e repinta o painel. */
     public void exibirDados(int d1, int d2) {
         this.dado1 = d1;
         this.dado2 = d2;
         repaint();
     }
 
-    /** Atualiza o nome do jogador exibido e repinta. */
     public void atualizarJogadorDaVez(String jogadorDaVez) {
         this.jogadorDaVez = jogadorDaVez;
         repaint();
@@ -214,7 +238,7 @@ public class PainelLateral extends JPanel {
     public int getTotalPassos() { return dado1 + dado2; }
 
     // =========================================================
-    // Diálogo "Escolher Dados" (responsabilidade da view)
+    // Dialogo "Escolher Dados" (responsabilidade da view)
     // =========================================================
 
     private void escolherDadosManualmente() {
@@ -242,7 +266,6 @@ public class PainelLateral extends JPanel {
             int d1 = Integer.parseInt(campo1.getText().trim());
             int d2 = Integer.parseInt(campo2.getText().trim());
 
-            // Garante que os valores estão no intervalo [1, 6]
             d1 = Math.min(6, Math.max(1, d1));
             d2 = Math.min(6, Math.max(1, d2));
 
@@ -251,15 +274,15 @@ public class PainelLateral extends JPanel {
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(
                     this,
-                    "Insira números inteiros entre 1 e 6.",
-                    "Valor inválido",
+                    "Insira numeros inteiros entre 1 e 6.",
+                    "Valor invalido",
                     JOptionPane.ERROR_MESSAGE
             );
         }
     }
 
     // =========================================================
-    // Renderização
+    // Renderizacao
     // =========================================================
 
     @Override
@@ -267,11 +290,7 @@ public class PainelLateral extends JPanel {
         super.paintComponent(g);
 
         Graphics2D g2 = (Graphics2D) g;
-
-        g2.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         desenharAreaDosDados(g2);
     }

@@ -1,10 +1,11 @@
 package controller;
 
-import java.util.List;
-
 import model.ClueFacade;
+import view.JanelaAcusacao;
+import view.JanelaPalpite;
 import view.PainelLateral;
 import view.PainelTabuleiro;
+
 public class ClueController {
 
     // =========================================================
@@ -43,12 +44,12 @@ public class ClueController {
     private PainelTabuleiro painelTabuleiro;
 
     private ClueController() {
-        this.facade = ClueFacade.getInstancia();
+        this.facade      = ClueFacade.getInstancia();
         this.estadoAtual = EstadoJogo.INICIO_TURNO;
     }
 
     // =========================================================
-    // Injeção de dependência dos painéis
+    // Injecao de dependencia dos paineis
     // =========================================================
 
     public void setPainelLateral(PainelLateral painelLateral) {
@@ -64,13 +65,9 @@ public class ClueController {
     }
 
     // =========================================================
-    // Inicialização de turno
+    // Inicializacao de turno
     // =========================================================
 
-    /**
-     * Deve ser chamado uma vez após os painéis serem configurados,
-     * e novamente a cada troca de turno (via onPassarTurno).
-     */
     public void iniciarTurno() {
         estadoAtual = EstadoJogo.INICIO_TURNO;
 
@@ -86,39 +83,36 @@ public class ClueController {
     // Eventos disparados pela view
     // =========================================================
 
-    /** Jogar dados de forma aleatória. */
+    /** Jogar dados de forma aleatoria. */
     public void onLancarDados() {
-        if (estadoAtual != EstadoJogo.INICIO_TURNO) {
-            return;
-        }
+        if (estadoAtual != EstadoJogo.INICIO_TURNO) return;
 
         int[] resultado = facade.lancarDados();
+        // Observer (DADOS_LANCADOS) ja destaca as casas alcancaveis no PainelTabuleiro
         processarLancamento(resultado);
     }
 
-    /** Jogar dados com valores definidos pelo testador. */
+    /**
+     * Jogar dados com valores definidos manualmente.
+     * Usa lancarDadosComValores() para que o Observer seja notificado igual ao dado normal.
+     */
     public void onLancarDadosComValores(int d1, int d2) {
-        if (estadoAtual != EstadoJogo.INICIO_TURNO) {
-            return;
-        }
+        if (estadoAtual != EstadoJogo.INICIO_TURNO) return;
 
-        int[] resultado = new int[]{ d1, d2 };
+        int[] resultado = facade.lancarDadosComValores(d1, d2);
+        // Observer (DADOS_LANCADOS) ja destaca as casas alcancaveis no PainelTabuleiro
         processarLancamento(resultado);
     }
 
     /** Jogador clicou em uma casa destino no tabuleiro. */
     public void onJogadorMoveu(String destino) {
-        if (estadoAtual != EstadoJogo.AGUARDANDO_MOVIMENTO) {
-            return;
-        }
+        if (estadoAtual != EstadoJogo.AGUARDANDO_MOVIMENTO) return;
 
         try {
-            String jogadorAtual = facade.getJogadorAtual();
-
             facade.moverJogadorAtual(destino);
+            // Observer (PEAO_MOVIDO) ja atualiza o piao no PainelTabuleiro
 
             if (painelTabuleiro != null) {
-                painelTabuleiro.moverPiao(jogadorAtual, destino);
                 painelTabuleiro.limparDestaques();
             }
 
@@ -131,25 +125,19 @@ public class ClueController {
             atualizarBotoes();
 
         } catch (IllegalArgumentException ex) {
-            // Destino inválido — permanece em AGUARDANDO_MOVIMENTO
+            // Destino invalido — permanece em AGUARDANDO_MOVIMENTO
         }
     }
 
-    /** Jogador optou por usar a passagem secreta em vez de rolar os dados. */
+    /** Jogador optou por usar a passagem secreta. */
     public void onUsarPassagemSecreta() {
-        if (estadoAtual != EstadoJogo.INICIO_TURNO) {
-            return;
-        }
+        if (estadoAtual != EstadoJogo.INICIO_TURNO) return;
 
         try {
-            String jogador = facade.getJogadorAtual();
-
             facade.usarPassagemSecretaJogadorDaVez();
-
-            String destino = facade.getCasaAtualDoJogador();
+            // Observer (PEAO_MOVIDO) ja atualiza o piao no PainelTabuleiro
 
             if (painelTabuleiro != null) {
-                painelTabuleiro.moverPiao(jogador, destino);
                 painelTabuleiro.limparDestaques();
             }
 
@@ -157,67 +145,67 @@ public class ClueController {
             atualizarBotoes();
 
         } catch (IllegalArgumentException ex) {
-            // Passagem indisponível — não faz nada
+            // Passagem indisponivel
         }
     }
 
-    /** Jogador clicou em "Próximo" para encerrar o turno. */
+    /** Jogador clicou em "Proximo" para encerrar o turno. */
     public void onPassarTurno() {
         boolean podePassar =
                 estadoAtual == EstadoJogo.FIM_DE_TURNO
                 || estadoAtual == EstadoJogo.APOS_MOVIMENTO_CORREDOR
                 || estadoAtual == EstadoJogo.APOS_MOVIMENTO_COMODO;
 
-        if (!podePassar) {
-            return;
-        }
+        if (!podePassar) return;
 
         facade.passarTurno();
-
-        if (painelTabuleiro != null) {
-            painelTabuleiro.limparDestaques();
-        }
+        // Observer (TURNO_ALTERADO) ja limpa destaques no PainelTabuleiro
 
         iniciarTurno();
     }
 
-    /**
-     * Jogador quer fazer um palpite.
-     * Só disponível quando está em um cômodo (APOS_MOVIMENTO_COMODO).
-     * TODO: abrir JanelaPalpite quando implementada.
-     */
+    /** Jogador quer fazer um palpite (so disponivel em APOS_MOVIMENTO_COMODO). */
     public void onFazerPalpite() {
-        if (estadoAtual != EstadoJogo.APOS_MOVIMENTO_COMODO) {
-            return;
-        }
+        if (estadoAtual != EstadoJogo.APOS_MOVIMENTO_COMODO) return;
 
-        // TODO: abrir janela de palpite e aguardar resposta dos outros jogadores
-        // Após o palpite ser concluído, transitar para FIM_DE_TURNO:
+        JanelaPalpite janela = new JanelaPalpite(painelTabuleiro);
+        janela.setVisible(true);
+        // O estado transita para FIM_DE_TURNO via callback onPalpiteConcluido()
+    }
+
+    /** Jogador quer fazer uma acusacao (disponivel em comodo ou corredor). */
+    public void onFazerAcusacao() {
+        JanelaAcusacao janela = new JanelaAcusacao();
+        janela.setVisible(true);
+        // O estado transita via callback onAcusacaoConcluida(correta)
+    }
+
+    // =========================================================
+    // Callbacks chamados pelas janelas apos confirmacao
+    // =========================================================
+
+    /** Chamado por JanelaPalpite apos o palpite ser confirmado. */
+    public void onPalpiteConcluido() {
         estadoAtual = EstadoJogo.FIM_DE_TURNO;
         atualizarBotoes();
     }
 
-    /**
-     * Jogador quer fazer uma acusação.
-     * Pode ser feita a qualquer momento do turno.
-     * TODO: abrir JanelaAcusacao quando implementada.
-     */
-    public void onFazerAcusacao() {
-        // TODO: abrir janela de acusação
-        // Se correta  → JOGO_ENCERRADO
-        // Se incorreta → FIM_DE_TURNO (jogador continua mas não pode mais vencer)
-        estadoAtual = EstadoJogo.FIM_DE_TURNO;
+    /** Chamado por JanelaAcusacao apos a acusacao ser confirmada. */
+    public void onAcusacaoConcluida(boolean correta) {
+        if (correta) {
+            estadoAtual = EstadoJogo.JOGO_ENCERRADO;
+        } else {
+            estadoAtual = EstadoJogo.FIM_DE_TURNO;
+        }
         atualizarBotoes();
     }
 
     // =========================================================
-    // Atualização centralizada dos botões
+    // Atualizacao centralizada dos botoes
     // =========================================================
 
     private void atualizarBotoes() {
-        if (painelLateral == null) {
-            return;
-        }
+        if (painelLateral == null) return;
 
         boolean temPassagem = facade.jogadorDaVezTemPassagemSecreta();
 
@@ -229,7 +217,7 @@ public class ClueController {
                 painelLateral.setBotaoPassagemSecretaHabilitado(temPassagem);
                 painelLateral.setBotaoProximoHabilitado(false);
                 painelLateral.setBotaoPalpiteHabilitado(false);
-                painelLateral.setBotaoAcusarHabilitado(false);
+                painelLateral.setBotaoAcusarHabilitado(true);
                 break;
 
             case AGUARDANDO_MOVIMENTO:
@@ -246,7 +234,7 @@ public class ClueController {
                 painelLateral.setBotaoEscolherDadosHabilitado(false);
                 painelLateral.setBotaoPassagemSecretaHabilitado(false);
                 painelLateral.setBotaoProximoHabilitado(true);
-                painelLateral.setBotaoPalpiteHabilitado(true);   // em cômodo: pode palpitar
+                painelLateral.setBotaoPalpiteHabilitado(true);
                 painelLateral.setBotaoAcusarHabilitado(true);
                 break;
 
@@ -255,8 +243,8 @@ public class ClueController {
                 painelLateral.setBotaoEscolherDadosHabilitado(false);
                 painelLateral.setBotaoPassagemSecretaHabilitado(false);
                 painelLateral.setBotaoProximoHabilitado(true);
-                painelLateral.setBotaoPalpiteHabilitado(false);  // corredor: sem palpite
-                painelLateral.setBotaoAcusarHabilitado(false);
+                painelLateral.setBotaoPalpiteHabilitado(false);
+                painelLateral.setBotaoAcusarHabilitado(true);
                 break;
 
             case FIM_DE_TURNO:
@@ -291,13 +279,8 @@ public class ClueController {
         if (painelLateral != null) {
             painelLateral.exibirDados(dados[0], dados[1]);
         }
-
-        String casaAtual = facade.getCasaAtualDoJogador();
-
-        if (casaAtual != null && painelTabuleiro != null) {
-            List<String> alcancaveis = facade.getCasasAlcancaveis(casaAtual, dados);
-            painelTabuleiro.destacarCasasAlcancaveis(alcancaveis);
-        }
+        // Destaque das casas alcancaveis e tratado pelo Observer (DADOS_LANCADOS)
+        // via PainelTabuleiro.notify()
 
         atualizarBotoes();
     }

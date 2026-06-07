@@ -14,7 +14,7 @@ import model.ClueFacade;
 public class JanelaTabuleiro extends JFrame {
 
     private PainelTabuleiro painelTabuleiro;
-    private PainelLateral painelLateral;
+    private PainelLateral   painelLateral;
 
     public JanelaTabuleiro() {
         setTitle("Clue");
@@ -30,7 +30,7 @@ public class JanelaTabuleiro extends JFrame {
         painelLateral   = new PainelLateral();
 
         /*
-         * O Controller precisa de referências para os dois painéis
+         * O Controller precisa de referencias para os dois paineis
          * antes de iniciarTurno() ser chamado.
          */
         ClueController controller = ClueController.getInstancia();
@@ -45,7 +45,7 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     // =========================================================
-    // Inicialização do modelo (sem mudanças)
+    // Inicializacao do modelo
     // =========================================================
 
     private void inicializarJogo() {
@@ -149,33 +149,33 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     private void conectarComodos(ClueFacade facade) {
-        facade.conectarCasas("COMODO_Cozinha",          "L3C5");
-        facade.conectarCasas("COMODO_Cozinha",          "L4C5");
+        facade.conectarCasas("COMODO_Cozinha",           "L3C5");
+        facade.conectarCasas("COMODO_Cozinha",           "L4C5");
 
-        facade.conectarCasas("COMODO_Sala de Musica",   "L6C8");
-        facade.conectarCasas("COMODO_Sala de Musica",   "L6C15");
+        facade.conectarCasas("COMODO_Sala de Musica",    "L6C8");
+        facade.conectarCasas("COMODO_Sala de Musica",    "L6C15");
 
-        facade.conectarCasas("COMODO_Jardim de Inverno","L3C18");
-        facade.conectarCasas("COMODO_Jardim de Inverno","L4C18");
+        facade.conectarCasas("COMODO_Jardim de Inverno", "L3C18");
+        facade.conectarCasas("COMODO_Jardim de Inverno", "L4C18");
 
-        facade.conectarCasas("COMODO_Sala de Jantar",   "L7C0");
+        facade.conectarCasas("COMODO_Sala de Jantar",    "L7C0");
 
-        facade.conectarCasas("COMODO_Salao de Jogos",   "L8C17");
+        facade.conectarCasas("COMODO_Salao de Jogos",    "L8C17");
 
-        facade.conectarCasas("COMODO_Biblioteca",       "L17C16");
+        facade.conectarCasas("COMODO_Biblioteca",        "L17C16");
 
-        facade.conectarCasas("COMODO_Sala de Estar",    "L19C6");
+        facade.conectarCasas("COMODO_Sala de Estar",     "L19C6");
 
-        facade.conectarCasas("COMODO_Entrada",          "L18C11");
-        facade.conectarCasas("COMODO_Entrada",          "L18C12");
-        facade.conectarCasas("COMODO_Entrada",          "L21C15");
+        facade.conectarCasas("COMODO_Entrada",           "L18C11");
+        facade.conectarCasas("COMODO_Entrada",           "L18C12");
+        facade.conectarCasas("COMODO_Entrada",           "L21C15");
 
-        facade.conectarCasas("COMODO_Escritorio",       "L21C18");
+        facade.conectarCasas("COMODO_Escritorio",        "L21C18");
     }
 
     private void adicionarPassagensSecretas(ClueFacade facade) {
-        facade.adicionarPassagemSecreta("COMODO_Cozinha",          "COMODO_Sala de Estar");
-        facade.adicionarPassagemSecreta("COMODO_Jardim de Inverno","COMODO_Escritorio");
+        facade.adicionarPassagemSecreta("COMODO_Cozinha",           "COMODO_Sala de Estar");
+        facade.adicionarPassagemSecreta("COMODO_Jardim de Inverno", "COMODO_Escritorio");
     }
 
     private void posicionarJogadoresIniciais(ClueFacade facade) {
@@ -188,7 +188,7 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     // =========================================================
-    // Posicionamento visual inicial dos peões
+    // Posicionamento visual inicial dos peoes
     // =========================================================
 
     private void inicializarPioesNaTela() {
@@ -202,7 +202,7 @@ public class JanelaTabuleiro extends JFrame {
         /*
          * Inicia o primeiro turno:
          * - define jogador da vez no painel lateral
-         * - habilita os botões corretos para o estado INICIO_TURNO
+         * - habilita os botoes corretos para o estado INICIO_TURNO
          */
         ClueController.getInstancia().iniciarTurno();
     }
