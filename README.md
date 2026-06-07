@@ -101,11 +101,3 @@ INICIO_TURNO → AGUARDANDO_MOVIMENTO → APOS_MOVIMENTO_COMODO  → FIM_DE_TURN
 3. Certifique-se de que a pasta `src/imagens/` está incluída no build path
 4. Execute `src/view/Main.java`
 
-## Iterações
-
-| Iteração | Período | Entregas |
-|----------|---------|---------|
-| 1ª | 27/04 – 10/05/2026 | Modelo base, regras, testes unitários |
-| 2ª | 11/05 – 24/05/2026 | Interface gráfica, tabuleiro, movimentação de peões |
-| 3ª | 25/05 – 07/06/2026 | Controller (Singleton), Observer, janelas de palpite/acusação/cartas/notas |
-| 4ª | 08/06 – 21/06/2026 | Versão final |
