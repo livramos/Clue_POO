@@ -130,12 +130,6 @@ public class GradeTabuleiro {
 
         inicializarCasasRemovidas();
 
-        /*
-         * Casas restauradas para permitir passagem dos peões.
-         *
-         * Essas casas tinham sido removidas em inicializarCasasRemovidas(),
-         * então agora tiramos elas do conjunto CASAS_REMOVIDAS.
-         */
         restaurar("L0C8");
         restaurar("L0C9");
         restaurar("L0C14");
@@ -165,11 +159,6 @@ public class GradeTabuleiro {
                 continue;
             }
 
-            /*
-             * Não pinta cômodos inteiros durante o jogo.
-             * Eles continuam clicáveis e válidos como destino,
-             * mas não ficam destacados de azul.
-             */
             if (nome.startsWith("COMODO_")) {
                 continue;
             }

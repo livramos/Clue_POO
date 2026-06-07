@@ -8,12 +8,13 @@ import java.util.Set;
 
 import javax.swing.JFrame;
 
+import controller.ClueController;
 import model.ClueFacade;
 
 public class JanelaTabuleiro extends JFrame {
 
     private PainelTabuleiro painelTabuleiro;
-    private PainelLateral painelLateral;
+    private PainelLateral   painelLateral;
 
     public JanelaTabuleiro() {
         setTitle("Clue");
@@ -26,24 +27,31 @@ public class JanelaTabuleiro extends JFrame {
         inicializarJogo();
 
         painelTabuleiro = new PainelTabuleiro();
-        painelLateral = new PainelLateral();
+        painelLateral   = new PainelLateral();
 
-        painelTabuleiro.setPainelLateral(painelLateral);
-        painelLateral.setPainelTabuleiro(painelTabuleiro);
+        /*
+         * O Controller precisa de referencias para os dois paineis
+         * antes de iniciarTurno() ser chamado.
+         */
+        ClueController controller = ClueController.getInstancia();
+        controller.setPainelLateral(painelLateral);
+        controller.setPainelTabuleiro(painelTabuleiro);
 
         inicializarPioesNaTela();
 
         setLayout(new BorderLayout());
-
         add(painelTabuleiro, BorderLayout.CENTER);
-        add(painelLateral, BorderLayout.EAST);
+        add(painelLateral,   BorderLayout.EAST);
     }
+
+    // =========================================================
+    // Inicializacao do modelo
+    // =========================================================
 
     private void inicializarJogo() {
         ClueFacade facade = ClueFacade.getInstancia();
 
         List<String> jogadores = new ArrayList<String>();
-
         jogadores.add("Srta. Scarlet");
         jogadores.add("Coronel Mostarda");
         jogadores.add("Sra. White");
@@ -54,7 +62,6 @@ public class JanelaTabuleiro extends JFrame {
         facade.prepararJogo(jogadores);
 
         GradeTabuleiro grade = new GradeTabuleiro();
-
         Set<String> corredores = grade.getCasasCorredor();
 
         adicionarCorredores(facade, corredores);
@@ -67,7 +74,6 @@ public class JanelaTabuleiro extends JFrame {
         conectarCasasIniciais(facade);
 
         adicionarPassagensSecretas(facade);
-
         posicionarJogadoresIniciais(facade);
     }
 
@@ -81,22 +87,12 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     private void conectarCasasIniciais(ClueFacade facade) {
-        facade.conectarCasas("INICIO_Srta. Scarlet", "L22C7");
-
+        facade.conectarCasas("INICIO_Srta. Scarlet",    "L22C7");
         facade.conectarCasas("INICIO_Coronel Mostarda", "L16C1");
-
-        facade.conectarCasas("INICIO_Sra. Peacock", "L5C22");
-
-        /*
-         * Corrigido:
-         * Antes estava L0C14, que fica perto do Sr. Green.
-         * A Sra. White deve sair pela casa perto do próprio spawn.
-         */
-        facade.conectarCasas("INICIO_Sra. White", "L0C9");
-
-        facade.conectarCasas("INICIO_Sr. Green", "L0C16");
-
-        facade.conectarCasas("INICIO_Professor Plum", "L18C22");
+        facade.conectarCasas("INICIO_Sra. Peacock",     "L5C22");
+        facade.conectarCasas("INICIO_Sra. White",       "L0C9");
+        facade.conectarCasas("INICIO_Sr. Green",        "L0C16");
+        facade.conectarCasas("INICIO_Professor Plum",   "L18C22");
     }
 
     private void adicionarCorredores(ClueFacade facade, Set<String> corredores) {
@@ -120,40 +116,27 @@ public class JanelaTabuleiro extends JFrame {
     private void adicionarPortasComodos(ClueFacade facade) {
         facade.adicionarCasa("L3C5");
         facade.adicionarCasa("L4C5");
-
         facade.adicionarCasa("L6C8");
         facade.adicionarCasa("L6C15");
-
         facade.adicionarCasa("L3C18");
         facade.adicionarCasa("L4C18");
-
         facade.adicionarCasa("L7C0");
-
-        /*
-         * Corrigido:
-         * Antes estava L17C6, que fica do outro lado do tabuleiro.
-         * A porta do Salão de Jogos deve ficar perto do Salão de Jogos.
-         */
         facade.adicionarCasa("L8C17");
-
         facade.adicionarCasa("L17C16");
-
         facade.adicionarCasa("L19C6");
-
         facade.adicionarCasa("L18C11");
         facade.adicionarCasa("L18C12");
         facade.adicionarCasa("L21C15");
-
         facade.adicionarCasa("L21C18");
     }
 
     private void conectarCorredores(ClueFacade facade, Set<String> corredores) {
         for (String casa : corredores) {
-            int linha = extrairLinha(casa);
+            int linha  = extrairLinha(casa);
             int coluna = extrairColuna(casa);
 
             String direita = GradeTabuleiro.nomeCelula(linha, coluna + 1);
-            String baixo = GradeTabuleiro.nomeCelula(linha + 1, coluna);
+            String baixo   = GradeTabuleiro.nomeCelula(linha + 1, coluna);
 
             if (corredores.contains(direita)) {
                 facade.conectarCasas(casa, direita);
@@ -166,67 +149,67 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     private void conectarComodos(ClueFacade facade) {
-        facade.conectarCasas("COMODO_Cozinha", "L3C5");
-        facade.conectarCasas("COMODO_Cozinha", "L4C5");
+        facade.conectarCasas("COMODO_Cozinha",           "L3C5");
+        facade.conectarCasas("COMODO_Cozinha",           "L4C5");
 
-        facade.conectarCasas("COMODO_Sala de Musica", "L6C8");
-        facade.conectarCasas("COMODO_Sala de Musica", "L6C15");
+        facade.conectarCasas("COMODO_Sala de Musica",    "L6C8");
+        facade.conectarCasas("COMODO_Sala de Musica",    "L6C15");
 
         facade.conectarCasas("COMODO_Jardim de Inverno", "L3C18");
         facade.conectarCasas("COMODO_Jardim de Inverno", "L4C18");
 
-        facade.conectarCasas("COMODO_Sala de Jantar", "L7C0");
+        facade.conectarCasas("COMODO_Sala de Jantar",    "L7C0");
 
-        /*
-         * Corrigido:
-         * Antes estava conectando o Salão de Jogos em L17C6.
-         */
-        facade.conectarCasas("COMODO_Salao de Jogos", "L8C17");
+        facade.conectarCasas("COMODO_Salao de Jogos",    "L8C17");
 
-        facade.conectarCasas("COMODO_Biblioteca", "L17C16");
+        facade.conectarCasas("COMODO_Biblioteca",        "L17C16");
 
-        facade.conectarCasas("COMODO_Sala de Estar", "L19C6");
+        facade.conectarCasas("COMODO_Sala de Estar",     "L19C6");
 
-        facade.conectarCasas("COMODO_Entrada", "L18C11");
-        facade.conectarCasas("COMODO_Entrada", "L18C12");
-        facade.conectarCasas("COMODO_Entrada", "L21C15");
+        facade.conectarCasas("COMODO_Entrada",           "L18C11");
+        facade.conectarCasas("COMODO_Entrada",           "L18C12");
+        facade.conectarCasas("COMODO_Entrada",           "L21C15");
 
-        facade.conectarCasas("COMODO_Escritorio", "L21C18");
+        facade.conectarCasas("COMODO_Escritorio",        "L21C18");
     }
 
     private void adicionarPassagensSecretas(ClueFacade facade) {
-        facade.adicionarPassagemSecreta(
-                "COMODO_Cozinha",
-                "COMODO_Sala de Estar"
-        );
-
-        facade.adicionarPassagemSecreta(
-                "COMODO_Jardim de Inverno",
-                "COMODO_Escritorio"
-        );
+        facade.adicionarPassagemSecreta("COMODO_Cozinha",           "COMODO_Sala de Estar");
+        facade.adicionarPassagemSecreta("COMODO_Jardim de Inverno", "COMODO_Escritorio");
     }
 
     private void posicionarJogadoresIniciais(ClueFacade facade) {
-        facade.posicionarJogador("Srta. Scarlet", "INICIO_Srta. Scarlet");
+        facade.posicionarJogador("Srta. Scarlet",    "INICIO_Srta. Scarlet");
         facade.posicionarJogador("Coronel Mostarda", "INICIO_Coronel Mostarda");
-        facade.posicionarJogador("Sra. White", "INICIO_Sra. White");
-        facade.posicionarJogador("Sr. Green", "INICIO_Sr. Green");
-        facade.posicionarJogador("Sra. Peacock", "INICIO_Sra. Peacock");
-        facade.posicionarJogador("Professor Plum", "INICIO_Professor Plum");
+        facade.posicionarJogador("Sra. White",       "INICIO_Sra. White");
+        facade.posicionarJogador("Sr. Green",        "INICIO_Sr. Green");
+        facade.posicionarJogador("Sra. Peacock",     "INICIO_Sra. Peacock");
+        facade.posicionarJogador("Professor Plum",   "INICIO_Professor Plum");
     }
+
+    // =========================================================
+    // Posicionamento visual inicial dos peoes
+    // =========================================================
 
     private void inicializarPioesNaTela() {
-        painelTabuleiro.moverPiao("Srta. Scarlet", "INICIO_Srta. Scarlet");
+        painelTabuleiro.moverPiao("Srta. Scarlet",    "INICIO_Srta. Scarlet");
         painelTabuleiro.moverPiao("Coronel Mostarda", "INICIO_Coronel Mostarda");
-        painelTabuleiro.moverPiao("Sra. White", "INICIO_Sra. White");
-        painelTabuleiro.moverPiao("Sr. Green", "INICIO_Sr. Green");
-        painelTabuleiro.moverPiao("Sra. Peacock", "INICIO_Sra. Peacock");
-        painelTabuleiro.moverPiao("Professor Plum", "INICIO_Professor Plum");
+        painelTabuleiro.moverPiao("Sra. White",       "INICIO_Sra. White");
+        painelTabuleiro.moverPiao("Sr. Green",        "INICIO_Sr. Green");
+        painelTabuleiro.moverPiao("Sra. Peacock",     "INICIO_Sra. Peacock");
+        painelTabuleiro.moverPiao("Professor Plum",   "INICIO_Professor Plum");
 
-        painelLateral.atualizarJogadorDaVez(
-                ClueFacade.getInstancia().getJogadorAtual()
-        );
+        /*
+         * Inicia o primeiro turno:
+         * - define jogador da vez no painel lateral
+         * - habilita os botoes corretos para o estado INICIO_TURNO
+         */
+        ClueController.getInstancia().iniciarTurno();
     }
+
+    // =========================================================
+    // Auxiliares
+    // =========================================================
 
     private int extrairLinha(String nome) {
         int cIndex = nome.indexOf("C");
