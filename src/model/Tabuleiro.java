@@ -78,44 +78,20 @@ class Tabuleiro {
             Casa casaAtual = atual.getCasa();
             int distanciaAtual = atual.getDistancia();
 
-            /*
-             * Adiciona todas as casas alcançáveis com até o valor dos dados.
-             * Não adiciona a casa inicial, porque distância 0 é onde o jogador já está.
-             */
             if (distanciaAtual > 0 && distanciaAtual <= valorDados) {
                 casasAlcancaveis.add(casaAtual);
             }
 
-            /*
-             * Regra do Clue:
-             * assim que o jogador entra em um cômodo, ele para de se mover.
-             * Portanto, se a casa atual é um cômodo alcançado durante o caminho,
-             * não continuamos expandindo a busca a partir dele.
-             */
             if (ehComodo(casaAtual) && distanciaAtual > 0) {
                 continue;
             }
 
-            /*
-             * Só continua expandindo caminhos enquanto ainda houver passos disponíveis.
-             */
             if (distanciaAtual < valorDados) {
                 for (Casa adjacente : casaAtual.getCasasAdjacentes()) {
-
-                    /*
-                     * Bloqueia entrada em casas iniciais.
-                     * A peça começa no INICIO_, mas depois ninguém pode entrar nele,
-                     * nem a própria peça que saiu.
-                     */
                     if (adjacente.getNome().startsWith("INICIO_")) {
                         continue;
                     }
 
-                    /*
-                     * Corredores ocupados bloqueiam passagem.
-                     * Cômodos não são bloqueados por ocupação, porque vários personagens
-                     * podem ficar no mesmo cômodo.
-                     */
                     boolean destinoEhComodo = ehComodo(adjacente);
                     boolean destinoBloqueado = adjacente.estaOcupada() && !destinoEhComodo;
 
@@ -130,3 +106,5 @@ class Tabuleiro {
         return casasAlcancaveis;
     }
 }
+	
+	

@@ -34,7 +34,7 @@ public class GradeTabuleiro {
     private static final Set<String> CASAS_REMOVIDAS =
             new HashSet<String>();
 
-    private static final boolean MODO_DEBUG = false;
+    private static final boolean MODO_DEBUG = true;
 
     private static final Color COR_DEBUG_COMODO =
             new Color(255, 0, 180, 60);
@@ -130,12 +130,6 @@ public class GradeTabuleiro {
 
         inicializarCasasRemovidas();
 
-        /*
-         * Casas restauradas para permitir passagem dos peões.
-         *
-         * Essas casas tinham sido removidas em inicializarCasasRemovidas(),
-         * então agora tiramos elas do conjunto CASAS_REMOVIDAS.
-         */
         restaurar("L0C8");
         restaurar("L0C9");
         restaurar("L0C14");
@@ -165,11 +159,6 @@ public class GradeTabuleiro {
                 continue;
             }
 
-            /*
-             * Não pinta cômodos inteiros durante o jogo.
-             * Eles continuam clicáveis e válidos como destino,
-             * mas não ficam destacados de azul.
-             */
             if (nome.startsWith("COMODO_")) {
                 continue;
             }
@@ -524,6 +513,13 @@ public class GradeTabuleiro {
                 criarRetanguloAreaGrade(5, 1, 5, 5)
         );
 
+        /*
+         * SALA DE JANTAR
+         *
+         * Recorte no canto superior direito.
+         * Isso corrige a "escadinha" para a Sala de Jantar não pegar
+         * as casas L8C5, L8C6 e L8C7.
+         */
         adicionarRecorteComodo(
                 "COMODO_Sala de Jantar",
                 criarRetanguloAreaGrade(8, 5, 8, 7)
@@ -541,6 +537,11 @@ public class GradeTabuleiro {
                 criarRetanguloAreaGrade(0, 14, 0, 15)
         );
         removerArea(0, 14, 0, 15);
+
+        /*
+         * Como L0C8, L0C9, L0C14 e L0C15 precisam ser caminháveis,
+         * restauramos novamente depois dos removerArea acima.
+         */
         restaurar("L0C8");
         restaurar("L0C9");
         restaurar("L0C14");

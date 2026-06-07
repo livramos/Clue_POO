@@ -38,3 +38,4 @@ class Casa {
         ocupada = false;
     }
 }
+
