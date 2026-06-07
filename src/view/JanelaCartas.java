@@ -123,42 +123,45 @@ public class JanelaCartas extends JFrame {
             return null;
         }
 
-        caminho = caminho.startsWith("/") ? caminho.substring(1) : caminho;
+        URL url = getClass().getResource(caminho);
 
         java.io.File arquivo = new java.io.File(caminho);
 
-        if (!arquivo.exists()) {
+        if (url == null) {
             System.out.println("Imagem não encontrada: " + caminho);
             return null;
         }
 
-        return new ImageIcon(caminho);
+        return new ImageIcon(url);
     }
 
-    private String getCaminhoImagemCarta(String nomeCarta) {
-        if (nomeCarta.equals("Biblioteca")) return "imagens/Comodos/Biblioteca.jpg";
-        if (nomeCarta.equals("Cozinha")) return "imagens/Comodos/Cozinha.jpg";
-        if (nomeCarta.equals("Entrada")) return "imagens/Comodos/Entrada.jpg";
-        if (nomeCarta.equals("Escritorio")) return "imagens/Comodos/Escritorio.jpg";
-        if (nomeCarta.equals("Jardim de Inverno")) return "imagens/Comodos/JardimInverno.jpg";
-        if (nomeCarta.equals("Sala de Estar")) return "imagens/Comodos/SalaDeEstar.jpg";
-        if (nomeCarta.equals("Sala de Jantar")) return "imagens/Comodos/SalaDeJantar.jpg";
-        if (nomeCarta.equals("Sala de Musica")) return "imagens/Comodos/SalaDeMusica.jpg";
-        if (nomeCarta.equals("Salao de Jogos")) return "imagens/Comodos/SalaoDeJogos.jpg";
+     private String getCaminhoImagemCarta(String nomeCarta) {
+        // CÔMODOS
+        if (nomeCarta.equals("Biblioteca")) return "/imagens/Comodos/Biblioteca.jpg";
+        if (nomeCarta.equals("Cozinha")) return "/imagens/Comodos/Cozinha.jpg";
+        if (nomeCarta.equals("Entrada")) return "/imagens/Comodos/Entrada.jpg";
+        if (nomeCarta.equals("Escritorio")) return "/imagens/Comodos/Escritorio.jpg";
+        if (nomeCarta.equals("Jardim de Inverno")) return "/imagens/Comodos/JardimInverno.jpg";
+        if (nomeCarta.equals("Sala de Estar")) return "/imagens/Comodos/SalaDeEstar.jpg";
+        if (nomeCarta.equals("Sala de Jantar")) return "/imagens/Comodos/SalaDeJantar.jpg";
+        if (nomeCarta.equals("Sala de Musica")) return "/imagens/Comodos/SalaDeMusica.jpg";
+        if (nomeCarta.equals("Salao de Jogos")) return "/imagens/Comodos/SalaoDeJogos.jpg";
 
-        if (nomeCarta.equals("Sr. Green")) return "imagens/Suspeitos/Green.jpg";
-        if (nomeCarta.equals("Coronel Mostarda")) return "imagens/Suspeitos/Mustard.jpg";
-        if (nomeCarta.equals("Sra. Peacock")) return "imagens/Suspeitos/Peacock.jpg";
-        if (nomeCarta.equals("Professor Plum")) return "imagens/Suspeitos/Plum.jpg";
-        if (nomeCarta.equals("Srta. Scarlet")) return "imagens/Suspeitos/Scarlet.jpg";
-        if (nomeCarta.equals("Sra. White")) return "imagens/Suspeitos/White.jpg";
+        // SUSPEITOS
+        if (nomeCarta.equals("Sr. Green")) return "/imagens/Suspeitos/Green.jpg";
+        if (nomeCarta.equals("Coronel Mostarda")) return "/imagens/Suspeitos/Mustard.jpg";
+        if (nomeCarta.equals("Sra. Peacock")) return "/imagens/Suspeitos/Peacock.jpg";
+        if (nomeCarta.equals("Professor Plum")) return "/imagens/Suspeitos/Plum.jpg";
+        if (nomeCarta.equals("Srta. Scarlet")) return "/imagens/Suspeitos/Scarlet.jpg";
+        if (nomeCarta.equals("Sra. White")) return "/imagens/Suspeitos/White.jpg";
 
-        if (nomeCarta.equals("Corda")) return "imagens/Armas/Corda.jpg";
-        if (nomeCarta.equals("Cano de Chumbo")) return "imagens/Armas/Cano.jpg";
-        if (nomeCarta.equals("Faca")) return "imagens/Armas/Faca.jpg";
-        if (nomeCarta.equals("Chave Inglesa")) return "imagens/Armas/ChaveInglesa.jpg";
-        if (nomeCarta.equals("Castiçal")) return "imagens/Armas/Castical.jpg";
-        if (nomeCarta.equals("Revólver")) return "imagens/Armas/Revolver.jpg";
+        // ARMAS
+        if (nomeCarta.equals("Corda")) return "/imagens/Armas/Corda.jpg";
+        if (nomeCarta.equals("Cano de Chumbo")) return "/imagens/Armas/Cano.jpg";
+        if (nomeCarta.equals("Faca")) return "/imagens/Armas/Faca.jpg";
+        if (nomeCarta.equals("Chave Inglesa")) return "/imagens/Armas/ChaveInglesa.jpg";
+        if (nomeCarta.equals("Castiçal")) return "/imagens/Armas/Castical.jpg";
+        if (nomeCarta.equals("Revólver")) return "/imagens/Armas/Revolver.jpg";
 
         return null;
     }

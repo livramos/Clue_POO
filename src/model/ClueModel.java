@@ -89,7 +89,7 @@ public class ClueModel {
         envelopeConfidencial.add(suspeitos.remove(0));
         envelopeConfidencial.add(comodos.remove(0));
         envelopeConfidencial.add(armas.remove(0));
-        
+ 
 
         List<Carta> cartasRestantes = new ArrayList<Carta>();
 

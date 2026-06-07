@@ -33,17 +33,17 @@ public class JanelaFolhasNotas extends JFrame {
         painelPrincipal.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
 
         painelPrincipal.add(criarPainelSecao(
-                "Suspects",
+                "Suspeitos",
                 facade.getSuspeitosFolhaJogadorDaVez()
         ));
 
         painelPrincipal.add(criarPainelSecao(
-                "Rooms",
+                "Comodos",
                 facade.getComodosFolhaJogadorDaVez()
         ));
 
         painelPrincipal.add(criarPainelSecao(
-                "Weapons",
+                "Armas",
                 facade.getArmasFolhaJogadorDaVez()
         ));
 
@@ -81,12 +81,7 @@ public class JanelaFolhasNotas extends JFrame {
             conteudo.add(checkBox);
         }
 
-        JPanel topo = new JPanel(new BorderLayout());
-        JLabel labelTitulo = new JLabel(titulo);
-        labelTitulo.setFont(new Font("Arial", Font.BOLD, 12));
-        topo.add(labelTitulo, BorderLayout.CENTER);
-
-        painel.add(topo, BorderLayout.NORTH);
+        
         painel.add(conteudo, BorderLayout.CENTER);
 
         return painel;

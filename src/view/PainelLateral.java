@@ -152,12 +152,12 @@ public class PainelLateral extends JPanel implements Observador {
  
     private void carregarImagens() {
         imagensDados = new Image[7];
-        imagensDados[1] = new ImageIcon("imagens/Tabuleiros/dado1.jpg").getImage();
-        imagensDados[2] = new ImageIcon("imagens/Tabuleiros/dado2.jpg").getImage();
-        imagensDados[3] = new ImageIcon("imagens/Tabuleiros/dado3.jpg").getImage();
-        imagensDados[4] = new ImageIcon("imagens/Tabuleiros/dado4.jpg").getImage();
-        imagensDados[5] = new ImageIcon("imagens/Tabuleiros/dado5.jpg").getImage();
-        imagensDados[6] = new ImageIcon("imagens/Tabuleiros/dado6.jpg").getImage();
+        imagensDados[1] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado1.jpg")).getImage();
+        imagensDados[2] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado2.jpg")).getImage();
+        imagensDados[3] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado3.jpg")).getImage();
+        imagensDados[4] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado4.jpg")).getImage();
+        imagensDados[5] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado5.jpg")).getImage();
+        imagensDados[6] = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/dado6.jpg")).getImage();
     }
  
     private void criarBotoes() {

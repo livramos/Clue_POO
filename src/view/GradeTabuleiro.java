@@ -34,7 +34,7 @@ public class GradeTabuleiro {
     private static final Set<String> CASAS_REMOVIDAS =
             new HashSet<String>();
 
-    private static final boolean MODO_DEBUG = true;
+    private static final boolean MODO_DEBUG = false;
 
     private static final Color COR_DEBUG_COMODO =
             new Color(255, 0, 180, 60);

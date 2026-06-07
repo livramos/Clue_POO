@@ -44,7 +44,7 @@ public class PainelTabuleiro extends JPanel implements Observador {
  
         setBackground(Color.GRAY);
  
-        imagemTabuleiro = new ImageIcon("imagens/Tabuleiros/Tabuleiro-Clue-A.jpg").getImage();
+        imagemTabuleiro = new ImageIcon(getClass().getResource("/imagens/Tabuleiros/Tabuleiro-Clue-A.jpg")).getImage();
  
         grade = new GradeTabuleiro();
  
