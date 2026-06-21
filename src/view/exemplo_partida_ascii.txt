@@ -1,0 +1,43 @@
+# Exemplo simples de partida em ASCII puro
+formato=CLUE_SAVE_V1
+jogadorAtual=Srta. Scarlet
+envelope.0=SUSPEITO:Professor Plum
+envelope.1=COMODO:Cozinha
+envelope.2=ARMA:Rev\u00f3lver
+jogador.quantidade=6
+
+jogador.0.nome=Srta. Scarlet
+jogador.0.posicao=INICIO_Srta. Scarlet
+jogador.0.eliminado=false
+jogador.0.cartas=ARMA:Corda|COMODO:Entrada
+jogador.0.notas=Corda:true|Entrada:true|Rev\u00f3lver:false|Cozinha:false
+
+jogador.1.nome=Coronel Mostarda
+jogador.1.posicao=INICIO_Coronel Mostarda
+jogador.1.eliminado=false
+jogador.1.cartas=SUSPEITO:Sr. Green|ARMA:Cano de Chumbo
+jogador.1.notas=Sr. Green:true|Cano de Chumbo:true
+
+jogador.2.nome=Sra. White
+jogador.2.posicao=INICIO_Sra. White
+jogador.2.eliminado=false
+jogador.2.cartas=COMODO:Sala de Jantar|ARMA:Faca
+jogador.2.notas=Sala de Jantar:true|Faca:true
+
+jogador.3.nome=Sr. Green
+jogador.3.posicao=INICIO_Sr. Green
+jogador.3.eliminado=false
+jogador.3.cartas=COMODO:Biblioteca|ARMA:Chave Inglesa
+jogador.3.notas=Biblioteca:true|Chave Inglesa:true
+
+jogador.4.nome=Sra. Peacock
+jogador.4.posicao=INICIO_Sra. Peacock
+jogador.4.eliminado=false
+jogador.4.cartas=COMODO:Salao de Jogos|ARMA:Casti\u00e7al
+jogador.4.notas=Salao de Jogos:true|Casti\u00e7al:true
+
+jogador.5.nome=Professor Plum
+jogador.5.posicao=INICIO_Professor Plum
+jogador.5.eliminado=false
+jogador.5.cartas=COMODO:Sala de Musica|COMODO:Jardim de Inverno
+jogador.5.notas=Sala de Musica:true|Jardim de Inverno:true

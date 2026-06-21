@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	 janelaSelecao  escolha = new janelaSelecao ();
+                janelaSelecao escolha = new janelaSelecao();
                 escolha.setVisible(true);
             }
         });
