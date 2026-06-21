@@ -190,6 +190,7 @@ public class ClueFacade implements Observado {
         String resultado = modelo.realizarPalpite(suspeito, arma);
 
         String comodoAtual = modelo.getComodoAtualJogadorDaVez();
+
         if (comodoAtual != null && modelo.ehJogador(suspeito)) {
             gerenciador.notificarPeaoMovido(suspeito, "COMODO_" + comodoAtual);
         }

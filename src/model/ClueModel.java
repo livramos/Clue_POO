@@ -443,20 +443,25 @@ public class ClueModel {
 
         Jogador suspeitoComoJogador = jogadoresPorNome.get(suspeito);
 
-        if (suspeitoComoJogador != null) {
+        if (suspeitoComoJogador != null && !suspeitoComoJogador.estaEliminado()) {
             moverJogadorParaCasa(suspeitoComoJogador, jogadorAtual.getCasaAtual());
         }
 
         String[] cartasDoPalpite = { suspeito, arma, comodo };
-        cartaRefutada = null; 
+        cartaRefutada = null;
+
         for (int deslocamento = 1; deslocamento < jogadoresEmOrdemDaEsquerda.size(); deslocamento++) {
             int indice = (indiceJogadorAtual + deslocamento) % jogadoresEmOrdemDaEsquerda.size();
 
             Jogador jogador = jogadoresEmOrdemDaEsquerda.get(indice);
 
+            if (jogador.estaEliminado()) {
+                continue;
+            }
+
             for (String cartaPalpite : cartasDoPalpite) {
                 if (jogador.possuiCarta(cartaPalpite)) {
-                	 cartaRefutada = cartaPalpite;
+                    cartaRefutada = cartaPalpite;
                     return jogador.getNome() + " pode mostrar uma carta.";
                 }
             }
@@ -516,7 +521,9 @@ public class ClueModel {
     	return cartaRefutada;
     }
     public boolean ehJogador(String nome) {
-        return jogadoresPorNome.containsKey(nome);
+        Jogador jogador = jogadoresPorNome.get(nome);
+
+        return jogador != null && !jogador.estaEliminado();
     }
 
 }
