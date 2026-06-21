@@ -130,8 +130,7 @@ public class ClueModel {
                 return i;
             }
         }
-
-        throw new IllegalArgumentException("Srta. Scarlet precisa estar na lista de jogadores.");
+        return 0; 
     }
 
     public String getNomeJogadorAtual() {
@@ -494,4 +493,22 @@ public class ClueModel {
         return acusacaoCorreta;
     }
     
+
+
+public int getQuantidadeJogadoresAtivos() {
+    int ativos = 0;
+    for (Jogador j : jogadoresEmOrdemDaEsquerda) {
+        if (!j.estaEliminado()) ativos++;
+    }
+    return ativos;
 }
+
+public String getNomeUnicoSobrevivente() {
+    for (Jogador j : jogadoresEmOrdemDaEsquerda) {
+        if (!j.estaEliminado()) return j.getNome();
+    }
+    return null;
+}
+
+}
+

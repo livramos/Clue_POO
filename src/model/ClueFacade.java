@@ -222,4 +222,11 @@ public class ClueFacade implements Observado {
     public void notificarNotasExibidas() {
         gerenciador.notificarJanelaNotasAberta(modelo.getNomeJogadorAtual());
     }
+    public int getQuantidadeJogadoresAtivos() {
+        return modelo.getQuantidadeJogadoresAtivos();
+    }
+
+    public String getNomeUnicoSobrevivente() {
+        return modelo.getNomeUnicoSobrevivente();
+    }
 }

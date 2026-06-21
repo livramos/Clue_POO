@@ -23,9 +23,7 @@ import model.ClueFacade;
 
 public class PainelLateral extends JPanel {
 
-    // =========================================================
-    // Botoes
-    // =========================================================
+   
 
     private JButton botaoPassagemSecreta;
     private JButton botaoProximo;
@@ -37,18 +35,14 @@ public class PainelLateral extends JPanel {
     private JButton botaoJogarDados;
     private JButton botaoEscolherDados;
 
-    // =========================================================
-    // Estado de renderizacao
-    // =========================================================
+   
 
     private Image[] imagensDados;
     private String  jogadorDaVez;
     private int     dado1;
     private int     dado2;
 
-    // =========================================================
-    // Construtor
-    // =========================================================
+  
 
     public PainelLateral() {
         setPreferredSize(new Dimension(220, 900));
@@ -64,12 +58,8 @@ public class PainelLateral extends JPanel {
         posicionarBotoes();
         configurarEventos();
 
-        // O ClueController define os estados corretos ao chamar iniciarTurno()
     }
 
-    // =========================================================
-    // Inicializacao
-    // =========================================================
 
     private void carregarImagens() {
         imagensDados = new Image[7];
@@ -92,7 +82,7 @@ public class PainelLateral extends JPanel {
         botaoJogarDados      = new JButton("Jogar Dados");
         botaoEscolherDados   = new JButton("Escolher Dados");
 
-        // Estado inicial conservador; ClueController.iniciarTurno() ira corrigir
+       
         botaoPassagemSecreta.setEnabled(false);
         botaoProximo.setEnabled(false);
         botaoPalpite.setEnabled(false);
@@ -121,10 +111,7 @@ public class PainelLateral extends JPanel {
         add(botaoEscolherDados);
     }
 
-    /**
-     * Toda acao de jogo e delegada ao ClueController.
-     * O painel nao contem mais nenhuma logica de estado.
-     */
+   
     private void configurarEventos() {
         botaoJogarDados.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -175,9 +162,7 @@ public class PainelLateral extends JPanel {
         });
     }
 
-    // =========================================================
-    // Janelas auxiliares (da branch Observer)
-    // =========================================================
+
 
     private void mostrarCartas() {
         ClueFacade facade = ClueFacade.getInstancia();
@@ -190,16 +175,14 @@ public class PainelLateral extends JPanel {
         new JanelaFolhasNotas(facade.getJogadorAtual()).setVisible(true);
     }
 
-    // =========================================================
-    // API chamada pelo ClueController para atualizar a view
-    // =========================================================
-
+ 
     public void exibirDados(int d1, int d2) {
         this.dado1 = d1;
         this.dado2 = d2;
         repaint();
     }
-
+  
+    
     public void atualizarJogadorDaVez(String jogadorDaVez) {
         this.jogadorDaVez = jogadorDaVez;
         repaint();
@@ -229,17 +212,12 @@ public class PainelLateral extends JPanel {
         botaoAcusar.setEnabled(habilitado);
     }
 
-    // =========================================================
-    // Getters auxiliares
-    // =========================================================
-
+   
     public int getDado1()       { return dado1; }
     public int getDado2()       { return dado2; }
     public int getTotalPassos() { return dado1 + dado2; }
 
-    // =========================================================
-    // Dialogo "Escolher Dados" (responsabilidade da view)
-    // =========================================================
+    
 
     private void escolherDadosManualmente() {
         JTextField campo1 = new JTextField("1");
@@ -281,9 +259,6 @@ public class PainelLateral extends JPanel {
         }
     }
 
-    // =========================================================
-    // Renderizacao
-    // =========================================================
 
     @Override
     protected void paintComponent(Graphics g) {

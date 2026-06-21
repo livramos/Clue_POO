@@ -15,8 +15,14 @@ public class JanelaTabuleiro extends JFrame {
 
     private PainelTabuleiro painelTabuleiro;
     private PainelLateral   painelLateral;
+    private final List<String> jogadoresEscolhidos;
 
     public JanelaTabuleiro() {
+        this(personagensPadrao());
+    }
+
+    public JanelaTabuleiro(List<String> jogadoresEscolhidos) {
+        this.jogadoresEscolhidos = jogadoresEscolhidos;
         setTitle("Clue");
         setSize(1200, 900);
         setMaximumSize(new Dimension(1400, 1050));
@@ -29,10 +35,7 @@ public class JanelaTabuleiro extends JFrame {
         painelTabuleiro = new PainelTabuleiro();
         painelLateral   = new PainelLateral();
 
-        /*
-         * O Controller precisa de referencias para os dois paineis
-         * antes de iniciarTurno() ser chamado.
-         */
+      
         ClueController controller = ClueController.getInstancia();
         controller.setPainelLateral(painelLateral);
         controller.setPainelTabuleiro(painelTabuleiro);
@@ -44,22 +47,12 @@ public class JanelaTabuleiro extends JFrame {
         add(painelLateral,   BorderLayout.EAST);
     }
 
-    // =========================================================
-    // Inicializacao do modelo
-    // =========================================================
+
 
     private void inicializarJogo() {
         ClueFacade facade = ClueFacade.getInstancia();
 
-        List<String> jogadores = new ArrayList<String>();
-        jogadores.add("Srta. Scarlet");
-        jogadores.add("Coronel Mostarda");
-        jogadores.add("Sra. White");
-        jogadores.add("Sr. Green");
-        jogadores.add("Sra. Peacock");
-        jogadores.add("Professor Plum");
-
-        facade.prepararJogo(jogadores);
+        facade.prepararJogo(jogadoresEscolhidos);
 
         GradeTabuleiro grade = new GradeTabuleiro();
         Set<String> corredores = grade.getCasasCorredor();
@@ -179,37 +172,21 @@ public class JanelaTabuleiro extends JFrame {
     }
 
     private void posicionarJogadoresIniciais(ClueFacade facade) {
-        facade.posicionarJogador("Srta. Scarlet",    "INICIO_Srta. Scarlet");
-        facade.posicionarJogador("Coronel Mostarda", "INICIO_Coronel Mostarda");
-        facade.posicionarJogador("Sra. White",       "INICIO_Sra. White");
-        facade.posicionarJogador("Sr. Green",        "INICIO_Sr. Green");
-        facade.posicionarJogador("Sra. Peacock",     "INICIO_Sra. Peacock");
-        facade.posicionarJogador("Professor Plum",   "INICIO_Professor Plum");
+        for (String nome : jogadoresEscolhidos) {
+            facade.posicionarJogador(nome, "INICIO_" + nome);
+        }
     }
 
-    // =========================================================
-    // Posicionamento visual inicial dos peoes
-    // =========================================================
+    
 
     private void inicializarPioesNaTela() {
-        painelTabuleiro.moverPiao("Srta. Scarlet",    "INICIO_Srta. Scarlet");
-        painelTabuleiro.moverPiao("Coronel Mostarda", "INICIO_Coronel Mostarda");
-        painelTabuleiro.moverPiao("Sra. White",       "INICIO_Sra. White");
-        painelTabuleiro.moverPiao("Sr. Green",        "INICIO_Sr. Green");
-        painelTabuleiro.moverPiao("Sra. Peacock",     "INICIO_Sra. Peacock");
-        painelTabuleiro.moverPiao("Professor Plum",   "INICIO_Professor Plum");
-
-        /*
-         * Inicia o primeiro turno:
-         * - define jogador da vez no painel lateral
-         * - habilita os botoes corretos para o estado INICIO_TURNO
-         */
+        for (String nome : jogadoresEscolhidos) {
+            painelTabuleiro.moverPiao(nome, "INICIO_" + nome);
+        }
         ClueController.getInstancia().iniciarTurno();
     }
 
-    // =========================================================
-    // Auxiliares
-    // =========================================================
+   
 
     private int extrairLinha(String nome) {
         int cIndex = nome.indexOf("C");
@@ -219,5 +196,16 @@ public class JanelaTabuleiro extends JFrame {
     private int extrairColuna(String nome) {
         int cIndex = nome.indexOf("C");
         return Integer.parseInt(nome.substring(cIndex + 1));
+    }
+
+    private static List<String> personagensPadrao() {
+        List<String> padrao = new ArrayList<String>();
+        padrao.add("Srta. Scarlet");
+        padrao.add("Coronel Mostarda");
+        padrao.add("Sra. White");
+        padrao.add("Sr. Green");
+        padrao.add("Sra. Peacock");
+        padrao.add("Professor Plum");
+        return padrao;
     }
 }
