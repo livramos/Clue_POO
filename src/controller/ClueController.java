@@ -203,13 +203,19 @@ public class ClueController {
     }
 
     private void reiniciarPartida() {
-        javax.swing.JOptionPane.showMessageDialog(
-            null,
-            "Funcionalidade de nova partida ainda nao implementada.\nA aplicacao sera encerrada.",
-            "Aviso",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE
-        );
-        System.exit(0);
+        
+        for (java.awt.Window w : java.awt.Window.getWindows()) {
+            w.dispose();
+        }
+      
+        facade.resetar();
+        estadoAtual = EstadoJogo.INICIO_TURNO;
+        painelLateral   = null;
+        painelTabuleiro = null;
+ 
+       
+        view.janelaSelecao escolha = new view.janelaSelecao();
+        escolha.setVisible(true);
     }
  
 

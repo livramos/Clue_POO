@@ -189,7 +189,6 @@ public class ClueFacade implements Observado {
     public String realizarPalpite(String suspeito, String arma) {
         String resultado = modelo.realizarPalpite(suspeito, arma);
  
-        // O suspeito foi arrastado para o cômodo do jogador atual — notifica.
         String comodoAtual = modelo.getComodoAtualJogadorDaVez();
         if (comodoAtual != null) {
             gerenciador.notificarPeaoMovido(suspeito, "COMODO_" + comodoAtual);
@@ -228,5 +227,8 @@ public class ClueFacade implements Observado {
 
     public String getNomeUnicoSobrevivente() {
         return modelo.getNomeUnicoSobrevivente();
+    }
+    public void resetar() {
+        modelo = new ClueModel();
     }
 }

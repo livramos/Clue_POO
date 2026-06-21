@@ -163,18 +163,18 @@ public class PainelLateral extends JPanel {
     }
 
 
-
     private void mostrarCartas() {
         ClueFacade facade = ClueFacade.getInstancia();
+        facade.notificarCartasExibidas();
         new JanelaCartas(facade.getJogadorAtual(), facade.getCartasJogadorDaVez())
                 .setVisible(true);
     }
 
     private void abrirBlocoNotas() {
         ClueFacade facade = ClueFacade.getInstancia();
+        facade.notificarNotasExibidas();
         new JanelaFolhasNotas(facade.getJogadorAtual()).setVisible(true);
-    }
-
+    } 
  
     public void exibirDados(int d1, int d2) {
         this.dado1 = d1;

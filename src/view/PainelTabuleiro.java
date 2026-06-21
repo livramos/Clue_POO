@@ -27,7 +27,7 @@ public class PainelTabuleiro extends JPanel implements Observador {
     private Image imagemTabuleiro;
     private GradeTabuleiro grade;
 
-    // Controle interno para saber se o movimento foi apos lancar dados.
+   
     private boolean dadosJaLancados = false;
 
     private Map<String, String> posicoesPioes;
@@ -37,10 +37,6 @@ public class PainelTabuleiro extends JPanel implements Observador {
     private static final int TABULEIRO_Y       = 20;
     private static final int TABULEIRO_LARGURA = 850;
     private static final int TABULEIRO_ALTURA  = 820;
-
-    // =========================================================
-    // Construtor
-    // =========================================================
 
     public PainelTabuleiro() {
         setPreferredSize(new Dimension(TABULEIRO_X * 2 + TABULEIRO_LARGURA,
@@ -64,14 +60,11 @@ public class PainelTabuleiro extends JPanel implements Observador {
 
         registrarCliqueMouse();
 
-        // Registro como observador da fachada (para DADOS_LANCADOS, TURNO_ALTERADO, PEAO_MOVIDO)
+     
         ClueFacade.getInstancia().add(this);
     }
 
-    // =========================================================
-    // Observer — reage a notificacoes do modelo
-    // =========================================================
-
+  
     @Override
     public void notify(Observado o) {
         int tipo = o.get(0);
@@ -98,11 +91,13 @@ public class PainelTabuleiro extends JPanel implements Observador {
             dadosJaLancados = false;
             limparDestaques();
         }
+        else if (tipo == GerenciadorEventos.JOGADOR_ELIMINADO) {
+            GerenciadorEventos g = (GerenciadorEventos) o;
+            String jogador = g.getString(0);
+            removerPiao(jogador);
+        }
     }
 
-    // =========================================================
-    // API publica (usada pelo ClueController e JanelaTabuleiro)
-    // =========================================================
 
     public void destacarCasasAlcancaveis(List<String> casas) {
         grade.destacarCasas(casas);
@@ -119,10 +114,13 @@ public class PainelTabuleiro extends JPanel implements Observador {
         repaint();
     }
 
-    // =========================================================
-    // Tratamento de clique do mouse
-    // =========================================================
+    public void removerPiao(String jogador) {
+        posicoesPioes.remove(jogador);
+        coresPioes.remove(jogador);
+        repaint();
+    }
 
+  
     private void registrarCliqueMouse() {
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -145,17 +143,11 @@ public class PainelTabuleiro extends JPanel implements Observador {
 
         System.out.println("Destino final: " + destino);
 
-        /*
-         * Toda a validacao e atualizacao de estado e responsabilidade
-         * do ClueController. O painel apenas informa o destino clicado.
-         */
+    
         ClueController.getInstancia().onJogadorMoveu(destino);
     }
 
-    // =========================================================
-    // Renderizacao
-    // =========================================================
-
+ 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
