@@ -1,5 +1,7 @@
 package model;
  
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
  
 import observer.GerenciadorEventos;
@@ -46,7 +48,7 @@ public class ClueFacade implements Observado {
         return gerenciador.getString(i);
     }
  
-    
+ 
     public void prepararJogo(List<String> nomes) {
         modelo.prepararJogo(nomes);
     }
@@ -86,12 +88,32 @@ public class ClueFacade implements Observado {
     }
  
  
+/* Carrega */
+    public void carregarJogo(File arquivo) throws IOException {
+        modelo.carregarEstadoDeArquivo(arquivo);
+ 
+        for (String jogador : modelo.getNomesJogadoresEmOrdem()) {
+            String casa = modelo.getNomeCasaAtualDoJogador(jogador);
+            if (casa != null) {
+                gerenciador.notificarPeaoMovido(jogador, casa);
+            }
+        }
+ 
+        gerenciador.notificarTurnoAlterado(modelo.getNomeJogadorAtual());
+    }
+ 
+/* Salvamento */
+    public boolean salvarPartida(File arquivo) {
+        return modelo.salvarEstado(arquivo);
+    }
+ 
+ 
     public int[] lancarDados() {
         int[] resultado = modelo.lancarDados();
         gerenciador.notificarDadosLancados(resultado[0], resultado[1]);
         return resultado;
     }
-
+ 
     /**
      * Versao com valores manuais (modo teste/escolha de dados).
      * Dispara a mesma notificacao DADOS_LANCADOS para manter o Observer informado.
@@ -189,6 +211,7 @@ public class ClueFacade implements Observado {
     public String realizarPalpite(String suspeito, String arma) {
         String resultado = modelo.realizarPalpite(suspeito, arma);
  
+        // O suspeito foi arrastado para o cômodo do jogador atual — notifica.
         String comodoAtual = modelo.getComodoAtualJogadorDaVez();
         if (comodoAtual != null) {
             gerenciador.notificarPeaoMovido(suspeito, "COMODO_" + comodoAtual);
@@ -221,13 +244,15 @@ public class ClueFacade implements Observado {
     public void notificarNotasExibidas() {
         gerenciador.notificarJanelaNotasAberta(modelo.getNomeJogadorAtual());
     }
+ 
     public int getQuantidadeJogadoresAtivos() {
         return modelo.getQuantidadeJogadoresAtivos();
     }
-
+ 
     public String getNomeUnicoSobrevivente() {
         return modelo.getNomeUnicoSobrevivente();
     }
+ 
     public void resetar() {
         modelo = new ClueModel();
     }

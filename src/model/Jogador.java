@@ -72,4 +72,8 @@ class Jogador {
     void eliminarPorAcusacaoErrada() {
         eliminado = true;
     }
+    
+    void definirEliminado(boolean eliminado) {
+        this.eliminado = eliminado;
+    }
 }

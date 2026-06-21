@@ -51,6 +51,12 @@ class Tabuleiro {
         passagensSecretas.put(origem, destino);
         passagensSecretas.put(destino, origem);
     }
+    
+    void limparOcupacao() {
+        for (Casa casa : casas.values()) {
+            casa.desocupar();
+        }
+    }
 
     boolean temPassagemSecreta(String nomeCasa) {
         return passagensSecretas.containsKey(nomeCasa);
