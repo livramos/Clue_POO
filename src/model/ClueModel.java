@@ -12,6 +12,7 @@ public class ClueModel {
     private Map<String, Jogador> jogadoresPorNome;
     private Dado dado;
     private Tabuleiro tabuleiro;
+    private String cartaRefutada;
     private int indiceJogadorAtual;
     private List<String> ultimasCasasMapeadas;
 
@@ -447,7 +448,7 @@ public class ClueModel {
         }
 
         String[] cartasDoPalpite = { suspeito, arma, comodo };
-
+        cartaRefutada = null; 
         for (int deslocamento = 1; deslocamento < jogadoresEmOrdemDaEsquerda.size(); deslocamento++) {
             int indice = (indiceJogadorAtual + deslocamento) % jogadoresEmOrdemDaEsquerda.size();
 
@@ -455,6 +456,7 @@ public class ClueModel {
 
             for (String cartaPalpite : cartasDoPalpite) {
                 if (jogador.possuiCarta(cartaPalpite)) {
+                	 cartaRefutada = cartaPalpite;
                     return jogador.getNome() + " pode mostrar uma carta.";
                 }
             }
@@ -495,20 +497,27 @@ public class ClueModel {
     
 
 
-public int getQuantidadeJogadoresAtivos() {
-    int ativos = 0;
-    for (Jogador j : jogadoresEmOrdemDaEsquerda) {
-        if (!j.estaEliminado()) ativos++;
+    public int getQuantidadeJogadoresAtivos() {
+    	int ativos = 0;
+    	for (Jogador j : jogadoresEmOrdemDaEsquerda) {
+    		if (!j.estaEliminado()) ativos++;
+    	}
+    	return ativos;
     }
-    return ativos;
-}
 
-public String getNomeUnicoSobrevivente() {
-    for (Jogador j : jogadoresEmOrdemDaEsquerda) {
-        if (!j.estaEliminado()) return j.getNome();
+    public String getNomeUnicoSobrevivente() {
+    	for (Jogador j : jogadoresEmOrdemDaEsquerda) {
+    		if (!j.estaEliminado()) return j.getNome();
+    	}
+    	return null;
     }
-    return null;
-}
+
+    public String getCartaRefutada() {
+    	return cartaRefutada;
+    }
+    public boolean ehJogador(String nome) {
+        return jogadoresPorNome.containsKey(nome);
+    }
 
 }
 

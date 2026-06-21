@@ -188,14 +188,14 @@ public class ClueFacade implements Observado {
  
     public String realizarPalpite(String suspeito, String arma) {
         String resultado = modelo.realizarPalpite(suspeito, arma);
- 
+
         String comodoAtual = modelo.getComodoAtualJogadorDaVez();
-        if (comodoAtual != null) {
+        if (comodoAtual != null && modelo.ehJogador(suspeito)) {
             gerenciador.notificarPeaoMovido(suspeito, "COMODO_" + comodoAtual);
         }
- 
+
         gerenciador.notificarPalpiteRealizado(resultado);
- 
+
         return resultado;
     }
  
@@ -231,4 +231,8 @@ public class ClueFacade implements Observado {
     public void resetar() {
         modelo = new ClueModel();
     }
+    public String getCartaRefutada() {
+        return modelo.getCartaRefutada();
+    }
+    
 }

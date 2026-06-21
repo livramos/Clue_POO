@@ -135,7 +135,7 @@ public class JanelaCartas extends JFrame {
         return new ImageIcon(url);
     }
 
-     private String getCaminhoImagemCarta(String nomeCarta) {
+     public static String getCaminhoImagemCarta(String nomeCarta) {
         // CÔMODOS
         if (nomeCarta.equals("Biblioteca")) return "/imagens/Comodos/Biblioteca.jpg";
         if (nomeCarta.equals("Cozinha")) return "/imagens/Comodos/Cozinha.jpg";
