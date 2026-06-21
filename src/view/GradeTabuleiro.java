@@ -34,6 +34,10 @@ public class GradeTabuleiro {
     private static final Set<String> CASAS_REMOVIDAS =
             new HashSet<String>();
 
+    /*
+     * Deixe true enquanto estiver ajustando/debugando.
+     * Para entrega final, deixe false.
+     */
     private static final boolean MODO_DEBUG = false;
 
     private static final Color COR_DEBUG_COMODO =
@@ -44,60 +48,70 @@ public class GradeTabuleiro {
 
     private static final Color COR_CORREDOR = new Color(0, 180, 255, 170);
     private static final Color COR_BORDA_COR = new Color(0, 100, 255, 255);
+
+    /*
+     * Se true, o debug tambem pinta os retangulos dos comodos.
+     * Normalmente deixe false para nao poluir a tela.
+     */
     private static final boolean DESENHAR_DEBUG_COMODOS = false;
 
     private static final Color COR_PORTA = new Color(255, 140, 0, 200);
     private static final Color COR_BORDA_PORTA = new Color(255, 80, 0, 255);
 
+    /*
+     * Portas corrigidas de acordo com o ajuste feito na outra branch.
+     */
     private static final String[][] PORTAS_COMODOS = {
             {
                     "COMODO_Cozinha",
-                    "L3C5",
-                    "L4C5"
+                    "L6C4",
             },
 
             {
                     "COMODO_Sala de Musica",
-                    "L6C8",
-                    "L6C15"
+                    "L4C16",
+                    "L7C14",
+                    "L7C9",
+                    "L4C7",
             },
 
             {
                     "COMODO_Jardim de Inverno",
-                    "L3C18",
                     "L4C18"
             },
 
             {
                     "COMODO_Sala de Jantar",
-                    "L7C0"
+                    "L11C8",
+                    "L15C16",
+                    "L15C6",
             },
 
             {
                     "COMODO_Salao de Jogos",
-                    "L17C6"
+                    "L8C17",
+                    "L12C22",
             },
 
             {
                     "COMODO_Biblioteca",
-                    "L17C16"
+                    "L12C20",
             },
 
             {
                     "COMODO_Sala de Estar",
-                    "L19C6"
+                    "L17C6",
             },
 
             {
                     "COMODO_Entrada",
-                    "L18C11",
-                    "L18C12",
-                    "L21C15"
+                    "L16C11",
+                    "L16C12",
             },
 
             {
                     "COMODO_Escritorio",
-                    "L21C18"
+                    "L19C17",
             }
     };
 
@@ -155,10 +169,18 @@ public class GradeTabuleiro {
         for (String nomeOriginal : nomes) {
             String nome = normalizarNomeCasa(nomeOriginal);
 
+            if (nome == null) {
+                continue;
+            }
+
             if (!mapaCasas.containsKey(nome)) {
                 continue;
             }
 
+            /*
+             * Nao destacar comodos inteiros quando o jogador lanca os dados.
+             * O jogador deve clicar na porta/seta, nao no comodo inteiro.
+             */
             if (nome.startsWith("COMODO_")) {
                 continue;
             }
@@ -168,9 +190,13 @@ public class GradeTabuleiro {
             }
 
             if (casasPorta.contains(nome)) {
-                portasDestacadas.add(nome);
+                if (!portasDestacadas.contains(nome)) {
+                    portasDestacadas.add(nome);
+                }
             } else {
-                casasDestacadas.add(nome);
+                if (!casasDestacadas.contains(nome)) {
+                    casasDestacadas.add(nome);
+                }
             }
         }
     }
@@ -178,6 +204,15 @@ public class GradeTabuleiro {
     public void limparDestaques() {
         casasDestacadas.clear();
         portasDestacadas.clear();
+    }
+
+    /*
+     * Este metodo deve ser chamado no PainelTabuleiro.paintComponent.
+     */
+    public void desenharDebugSeAtivo(Graphics2D g2) {
+        if (MODO_DEBUG) {
+            desenharDebug(g2);
+        }
     }
 
     public boolean ePorta(String nomeCasa) {
@@ -199,64 +234,56 @@ public class GradeTabuleiro {
     }
 
     public void desenharDestaques(Graphics2D g2) {
-        for (String nome : casasDestacadas) {
-            Rectangle r = mapaCasas.get(nome);
-
-            if (r == null) {
-                continue;
-            }
-
-            g2.setColor(COR_CORREDOR);
-
-            g2.fillRect(
-                    r.x,
-                    r.y,
-                    r.width - 1,
-                    r.height - 1
-            );
-
-            g2.setColor(COR_BORDA_COR);
-
-            g2.drawRect(
-                    r.x,
-                    r.y,
-                    r.width - 1,
-                    r.height - 1
-            );
+        for (String casa : casasDestacadas) {
+            desenharDestaqueDeCasa(g2, casa);
         }
 
-        for (String nome : portasDestacadas) {
-            Rectangle r = mapaCasas.get(nome);
+        for (String porta : portasDestacadas) {
+            desenharDestaqueDePorta(g2, porta);
+        }
+    }
 
-            if (r == null) {
-                continue;
-            }
+    private void desenharDestaqueDePorta(Graphics2D g2, String porta) {
+        Rectangle r = getRetanguloCasaOuComodo(porta);
 
-            int margemX = 6;
-            int margemY = 6;
-
-            g2.setColor(COR_PORTA);
-
-            g2.fillRect(
-                    r.x + margemX,
-                    r.y + margemY,
-                    r.width - margemX * 2,
-                    r.height - margemY * 2
-            );
-
-            g2.setColor(COR_BORDA_PORTA);
-
-            g2.drawRect(
-                    r.x + margemX,
-                    r.y + margemY,
-                    r.width - margemX * 2,
-                    r.height - margemY * 2
-            );
+        if (r == null) {
+            return;
         }
 
-        if (MODO_DEBUG) {
-            desenharDebug(g2);
+        /*
+         * Porta destacada em azul, nao amarelo/laranja.
+         */
+        g2.setColor(new Color(0, 160, 255, 100));
+        g2.fillRect(r.x, r.y, r.width, r.height);
+
+        g2.setColor(new Color(0, 120, 255));
+        g2.drawRect(r.x, r.y, r.width, r.height);
+    }
+
+    private void desenharDestaqueDeCasa(Graphics2D g2, String casa) {
+        Rectangle r = getRetanguloCasaOuComodo(casa);
+
+        if (r == null) {
+            return;
         }
+
+        g2.setColor(COR_CORREDOR);
+
+        g2.fillRect(
+                r.x,
+                r.y,
+                r.width - 1,
+                r.height - 1
+        );
+
+        g2.setColor(COR_BORDA_COR);
+
+        g2.drawRect(
+                r.x,
+                r.y,
+                r.width - 1,
+                r.height - 1
+        );
     }
 
     private void desenharDebug(Graphics2D g2) {
@@ -310,64 +337,66 @@ public class GradeTabuleiro {
             );
         }
 
-        g2.setFont(new Font("Arial", Font.BOLD, 10));
+        if (DESENHAR_DEBUG_COMODOS) {
+            g2.setFont(new Font("Arial", Font.BOLD, 10));
 
-        for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
-            String nome = e.getKey();
+            for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
+                String nome = e.getKey();
 
-            if (!nome.startsWith("COMODO_")) {
-                continue;
-            }
-
-            Rectangle r = e.getValue();
-
-            g2.setColor(COR_DEBUG_COMODO);
-
-            g2.fillRect(
-                    r.x,
-                    r.y,
-                    r.width,
-                    r.height
-            );
-
-            g2.setColor(COR_BORDA_COMODO);
-
-            g2.drawRect(
-                    r.x,
-                    r.y,
-                    r.width,
-                    r.height
-            );
-
-            g2.setColor(Color.BLACK);
-
-            g2.drawString(
-                    formatarNomeComodo(nome),
-                    r.x + 6,
-                    r.y + 14
-            );
-
-            List<Rectangle> expansoes = expansoesComodos.get(nome);
-
-            if (expansoes != null) {
-                for (Rectangle extra : expansoes) {
-                    g2.setColor(COR_DEBUG_COMODO);
-                    g2.fillRect(extra.x, extra.y, extra.width, extra.height);
-
-                    g2.setColor(COR_BORDA_COMODO);
-                    g2.drawRect(extra.x, extra.y, extra.width, extra.height);
+                if (!nome.startsWith("COMODO_")) {
+                    continue;
                 }
-            }
 
-            List<Rectangle> recortes = recortesComodos.get(nome);
+                Rectangle r = e.getValue();
 
-            if (recortes != null) {
-                for (Rectangle corte : recortes) {
-                    g2.setColor(new Color(255, 0, 0, 70));
-                    g2.fillRect(corte.x, corte.y, corte.width, corte.height);
+                g2.setColor(COR_DEBUG_COMODO);
 
-                    g2.setColor(new Color(180, 0, 0, 180));
-                    g2.drawRect(corte.x, corte.y, corte.width, corte.height);
+                g2.fillRect(
+                        r.x,
+                        r.y,
+                        r.width,
+                        r.height
+                );
+
+                g2.setColor(COR_BORDA_COMODO);
+
+                g2.drawRect(
+                        r.x,
+                        r.y,
+                        r.width,
+                        r.height
+                );
+
+                g2.setColor(Color.BLACK);
+
+                g2.drawString(
+                        formatarNomeComodo(nome),
+                        r.x + 6,
+                        r.y + 14
+                );
+
+                List<Rectangle> expansoes = expansoesComodos.get(nome);
+
+                if (expansoes != null) {
+                    for (Rectangle extra : expansoes) {
+                        g2.setColor(COR_DEBUG_COMODO);
+                        g2.fillRect(extra.x, extra.y, extra.width, extra.height);
+
+                        g2.setColor(COR_BORDA_COMODO);
+                        g2.drawRect(extra.x, extra.y, extra.width, extra.height);
+                    }
+                }
+
+                List<Rectangle> recortes = recortesComodos.get(nome);
+
+                if (recortes != null) {
+                    for (Rectangle corte : recortes) {
+                        g2.setColor(new Color(255, 0, 0, 70));
+                        g2.fillRect(corte.x, corte.y, corte.width, corte.height);
+
+                        g2.setColor(new Color(180, 0, 0, 180));
+                        g2.drawRect(corte.x, corte.y, corte.width, corte.height);
+                    }
                 }
             }
         }
@@ -517,7 +546,7 @@ public class GradeTabuleiro {
          * SALA DE JANTAR
          *
          * Recorte no canto superior direito.
-         * Isso corrige a "escadinha" para a Sala de Jantar não pegar
+         * Isso corrige a "escadinha" para a Sala de Jantar nao pegar
          * as casas L8C5, L8C6 e L8C7.
          */
         adicionarRecorteComodo(
@@ -539,7 +568,7 @@ public class GradeTabuleiro {
         removerArea(0, 14, 0, 15);
 
         /*
-         * Como L0C8, L0C9, L0C14 e L0C15 precisam ser caminháveis,
+         * Como L0C8, L0C9, L0C14 e L0C15 precisam ser caminhaveis,
          * restauramos novamente depois dos removerArea acima.
          */
         restaurar("L0C8");
@@ -666,18 +695,22 @@ public class GradeTabuleiro {
     }
 
     public String getCasaClicada(int px, int py) {
-        for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
-            String nome = e.getKey();
+        /*
+         * Primeiro testa as portas.
+         * Isso evita que o clique na seta/porta seja capturado
+         * pelo retangulo grande do comodo.
+         */
+        for (String porta : casasPorta) {
+            Rectangle r = mapaCasas.get(porta);
 
-            if (!nome.startsWith("COMODO_")) {
-                continue;
-            }
-
-            if (pontoPertenceAoComodo(nome, px, py)) {
-                return nome;
+            if (r != null && r.contains(px, py)) {
+                return porta;
             }
         }
 
+        /*
+         * Depois testa corredores/casas normais.
+         */
         for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
             String nome = e.getKey();
 
@@ -690,6 +723,23 @@ public class GradeTabuleiro {
             }
 
             if (e.getValue().contains(px, py)) {
+                return nome;
+            }
+        }
+
+        /*
+         * Por ultimo testa os comodos.
+         * Assim o clique no comodo so retorna COMODO_... se nao tiver
+         * nenhuma porta/casa normal naquele pixel.
+         */
+        for (Map.Entry<String, Rectangle> e : mapaCasas.entrySet()) {
+            String nome = e.getKey();
+
+            if (!nome.startsWith("COMODO_")) {
+                continue;
+            }
+
+            if (pontoPertenceAoComodo(nome, px, py)) {
                 return nome;
             }
         }

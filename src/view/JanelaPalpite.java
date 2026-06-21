@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import controller.ClueController;
 import model.ClueFacade;
 
+
 public class JanelaPalpite extends JFrame {
 
     private JComboBox<String> comboSuspeito;
@@ -46,7 +47,12 @@ public class JanelaPalpite extends JFrame {
 
             // realizarPalpite ja dispara PEAO_MOVIDO — Observer atualiza o piao
             String resultado = ClueFacade.getInstancia().realizarPalpite(suspeito, arma);
+            String cartaRefutada = ClueFacade.getInstancia().getCartaRefutada();
+            String jogadorQueRefutou = ClueFacade.getInstancia().getJogadorQueRefutou();
 
+            if (cartaRefutada != null) {
+                new JanelaCartaRefutada(jogadorQueRefutou, cartaRefutada).setVisible(true);
+            }
             labelResultado.setText(resultado);
 
             botaoConfirmar.setEnabled(false);

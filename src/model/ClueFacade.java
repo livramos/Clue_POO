@@ -131,10 +131,75 @@ public class ClueFacade implements Observado {
  
     public void moverJogadorAtual(String casaDestino) {
         casaDestino = GradeTabuleiro.normalizarNomeCasa(casaDestino);
-        modelo.deslocarPiaoDaVez(casaDestino); // lança exceção se inválido
-        gerenciador.notificarPeaoMovido(modelo.getNomeJogadorAtual(), casaDestino);
+
+        /*
+         * Primeiro move para a casa clicada, tipo L17C6.
+         * Isso mantém a validação normal das casas alcançáveis.
+         */
+        modelo.deslocarPiaoDaVez(casaDestino);
+
+        /*
+         * Se a casa clicada é uma porta, a posição lógica final
+         * do jogador deve virar o cômodo correspondente.
+         */
+        String comodoDestino = getComodoDaPorta(casaDestino);
+
+        if (comodoDestino != null) {
+            modelo.posicionarPiaoDaVez(comodoDestino);
+            gerenciador.notificarPeaoMovido(modelo.getNomeJogadorAtual(), comodoDestino);
+        } else {
+            gerenciador.notificarPeaoMovido(modelo.getNomeJogadorAtual(), casaDestino);
+        }
     }
- 
+    
+    private String getComodoDaPorta(String nomeCasa) {
+        nomeCasa = GradeTabuleiro.normalizarNomeCasa(nomeCasa);
+
+        if ("L6C4".equals(nomeCasa)) {
+            return "COMODO_Cozinha";
+        }
+
+        if ("L4C16".equals(nomeCasa)
+                || "L7C14".equals(nomeCasa)
+                || "L7C9".equals(nomeCasa)
+                || "L4C7".equals(nomeCasa)) {
+            return "COMODO_Sala de Musica";
+        }
+
+        if ("L4C18".equals(nomeCasa)) {
+            return "COMODO_Jardim de Inverno";
+        }
+
+        if ("L11C8".equals(nomeCasa)
+                || "L15C16".equals(nomeCasa)
+                || "L15C6".equals(nomeCasa)) {
+            return "COMODO_Sala de Jantar";
+        }
+
+        if ("L8C17".equals(nomeCasa)
+                || "L12C22".equals(nomeCasa)) {
+            return "COMODO_Salao de Jogos";
+        }
+
+        if ("L12C20".equals(nomeCasa)) {
+            return "COMODO_Biblioteca";
+        }
+
+        if ("L17C6".equals(nomeCasa)) {
+            return "COMODO_Sala de Estar";
+        }
+
+        if ("L16C11".equals(nomeCasa)
+                || "L16C12".equals(nomeCasa)) {
+            return "COMODO_Entrada";
+        }
+
+        if ("L19C17".equals(nomeCasa)) {
+            return "COMODO_Escritorio";
+        }
+
+        return null;
+    }
     public String getCasaAtualDoJogador() {
         String casaAtual = modelo.getNomeCasaAtualDoJogadorDaVez();
         return GradeTabuleiro.normalizarNomeCasa(casaAtual);
@@ -210,15 +275,15 @@ public class ClueFacade implements Observado {
  
     public String realizarPalpite(String suspeito, String arma) {
         String resultado = modelo.realizarPalpite(suspeito, arma);
- 
-        // O suspeito foi arrastado para o cômodo do jogador atual — notifica.
+
         String comodoAtual = modelo.getComodoAtualJogadorDaVez();
-        if (comodoAtual != null) {
+
+        if (comodoAtual != null && modelo.jogadorEstaAtivo(suspeito)) {
             gerenciador.notificarPeaoMovido(suspeito, "COMODO_" + comodoAtual);
         }
- 
+
         gerenciador.notificarPalpiteRealizado(resultado);
- 
+
         return resultado;
     }
  
@@ -255,5 +320,12 @@ public class ClueFacade implements Observado {
  
     public void resetar() {
         modelo = new ClueModel();
+    }
+    public String getCartaRefutada() {
+        return modelo.getCartaRefutada();
+    }
+
+    public String getJogadorQueRefutou() {
+        return modelo.getJogadorQueRefutou();
     }
 }

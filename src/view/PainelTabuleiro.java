@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +112,40 @@ public class PainelTabuleiro extends JPanel implements Observador {
     }
  
     public void moverPiao(String jogador, String casa) {
-        posicoesPioes.put(jogador, casa);
+        if (jogador == null || casa == null) {
+            return;
+        }
+
+        /*
+         * Se o Model mandar uma porta, tipo L17C6,
+         * o peao deve ser desenhado dentro do comodo correspondente.
+         */
+        String casaParaDesenho = normalizarCasaParaDesenho(casa);
+
+        System.out.println("Casa recebida pelo PainelTabuleiro: " + casa);
+        System.out.println("Casa usada para desenhar o peao: " + casaParaDesenho);
+
+        posicoesPioes.put(jogador, casaParaDesenho);
+
+        grade.limparDestaques();
+
         repaint();
+    }
+    
+    private String normalizarCasaParaDesenho(String casa) {
+        if (casa == null) {
+            return null;
+        }
+
+        if (grade.ePorta(casa)) {
+            String comodo = grade.getComodoDaPorta(casa);
+
+            if (comodo != null) {
+                return comodo;
+            }
+        }
+
+        return casa;
     }
  
     public void removerPiao(String jogador) {
@@ -131,18 +164,16 @@ public class PainelTabuleiro extends JPanel implements Observador {
  
     private void tratarClique(int px, int py) {
         System.out.println("Clique em pixel: x=" + px + " y=" + py);
- 
+
         String destino = grade.getCasaClicada(px, py);
         System.out.println("Destino detectado: " + destino);
- 
-        if (destino == null) return;
- 
-        if (grade.ePorta(destino)) {
-            destino = grade.getComodoDaPorta(destino);
+
+        if (destino == null) {
+            return;
         }
- 
-        System.out.println("Destino final: " + destino);
- 
+
+        System.out.println("Destino final enviado ao Controller: " + destino);
+
         ClueController.getInstancia().onJogadorMoveu(destino);
     }
  
@@ -159,6 +190,7 @@ public class PainelTabuleiro extends JPanel implements Observador {
  
         desenharFundo(g2);
         desenharImagemTabuleiro(g2);
+        grade.desenharDebugSeAtivo(g2);
         grade.desenharDestaques(g2);
         desenharPioes(g2);
     }
@@ -178,26 +210,101 @@ public class PainelTabuleiro extends JPanel implements Observador {
     }
  
     private void desenharPioes(Graphics2D g2) {
+        Map<String, List<String>> jogadoresPorCasa =
+                new HashMap<String, List<String>>();
+
+        /*
+         * Primeiro agrupamos os jogadores pela casa/comodo.
+         * Assim sabemos quando existem dois ou mais peoes no mesmo lugar.
+         */
         for (Map.Entry<String, String> entrada : posicoesPioes.entrySet()) {
             String jogador = entrada.getKey();
-            String casa    = entrada.getValue();
- 
-            Rectangle r = grade.getRetanguloCasaOuComodo(casa);
-            if (r == null) continue;
- 
-            Color cor = coresPioes.get(jogador);
-            if (cor == null) cor = Color.GRAY;
- 
-            int d  = calcularTamanhoPiao(casa, r);
-            int cx = r.x + (r.width  - d) / 2;
-            int cy = r.y + (r.height - d) / 2;
- 
-            g2.setColor(cor);
-            g2.fillOval(cx, cy, d, d);
- 
-            g2.setColor(Color.BLACK);
-            g2.drawOval(cx, cy, d, d);
+            String casa = entrada.getValue();
+
+            if (jogador == null || casa == null) {
+                continue;
+            }
+
+            if (!jogadoresPorCasa.containsKey(casa)) {
+                jogadoresPorCasa.put(casa, new ArrayList<String>());
+            }
+
+            jogadoresPorCasa.get(casa).add(jogador);
         }
+
+        /*
+         * Agora desenhamos os peoes agrupados.
+         */
+        for (Map.Entry<String, List<String>> entrada : jogadoresPorCasa.entrySet()) {
+            String casa = entrada.getKey();
+            List<String> jogadoresNaCasa = entrada.getValue();
+
+            Rectangle r = grade.getRetanguloCasaOuComodo(casa);
+
+            if (r == null) {
+                continue;
+            }
+
+            int d = calcularTamanhoPiao(casa, r);
+
+            for (int i = 0; i < jogadoresNaCasa.size(); i++) {
+                String jogador = jogadoresNaCasa.get(i);
+
+                Color cor = coresPioes.get(jogador);
+
+                if (cor == null) {
+                    cor = Color.GRAY;
+                }
+
+                int baseX = r.x + (r.width - d) / 2;
+                int baseY = r.y + (r.height - d) / 2;
+
+                int deslocamentoX = 0;
+                int deslocamentoY = 0;
+
+                /*
+                 * Se estiver dentro de comodo, espalha os peoes.
+                 */
+                if (casa != null && casa.startsWith("COMODO_")) {
+                    int[][] deslocamentos = {
+                            { -18, -12 },
+                            {  18, -12 },
+                            { -18,  16 },
+                            {  18,  16 },
+                            { -36,   2 },
+                            {  36,   2 }
+                    };
+
+                    int indice = i % deslocamentos.length;
+
+                    deslocamentoX = deslocamentos[indice][0];
+                    deslocamentoY = deslocamentos[indice][1];
+                }
+
+                int cx = baseX + deslocamentoX;
+                int cy = baseY + deslocamentoY;
+
+                cx = limitar(cx, r.x + 2, r.x + r.width - d - 2);
+                cy = limitar(cy, r.y + 2, r.y + r.height - d - 2);
+
+                g2.setColor(cor);
+                g2.fillOval(cx, cy, d, d);
+
+                g2.setColor(Color.BLACK);
+                g2.drawOval(cx, cy, d, d);
+            }
+        }
+    }
+    private int limitar(int valor, int minimo, int maximo) {
+        if (valor < minimo) {
+            return minimo;
+        }
+
+        if (valor > maximo) {
+            return maximo;
+        }
+
+        return valor;
     }
  
     private int calcularTamanhoPiao(String casa, Rectangle r) {

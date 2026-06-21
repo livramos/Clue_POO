@@ -108,20 +108,39 @@ public class JanelaTabuleiro extends JFrame {
     }
  
     private void adicionarPortasComodos(ClueFacade facade) {
-        facade.adicionarCasa("L3C5");
-        facade.adicionarCasa("L4C5");
-        facade.adicionarCasa("L6C8");
-        facade.adicionarCasa("L6C15");
-        facade.adicionarCasa("L3C18");
+        // Cozinha
+        facade.adicionarCasa("L6C4");
+
+        // Sala de Musica
+        facade.adicionarCasa("L4C16");
+        facade.adicionarCasa("L7C14");
+        facade.adicionarCasa("L7C9");
+        facade.adicionarCasa("L4C7");
+
+        // Jardim de Inverno
         facade.adicionarCasa("L4C18");
-        facade.adicionarCasa("L7C0");
+
+        // Sala de Jantar
+        facade.adicionarCasa("L11C8");
+        facade.adicionarCasa("L15C16");
+        facade.adicionarCasa("L15C6");
+
+        // Salao de Jogos
         facade.adicionarCasa("L8C17");
-        facade.adicionarCasa("L17C16");
-        facade.adicionarCasa("L19C6");
-        facade.adicionarCasa("L18C11");
-        facade.adicionarCasa("L18C12");
-        facade.adicionarCasa("L21C15");
-        facade.adicionarCasa("L21C18");
+        facade.adicionarCasa("L12C22");
+
+        // Biblioteca
+        facade.adicionarCasa("L12C20");
+
+        // Sala de Estar
+        facade.adicionarCasa("L17C6");
+
+        // Entrada
+        facade.adicionarCasa("L16C11");
+        facade.adicionarCasa("L16C12");
+
+        // Escritorio
+        facade.adicionarCasa("L19C17");
     }
  
     private void conectarCorredores(ClueFacade facade, Set<String> corredores) {
@@ -143,20 +162,39 @@ public class JanelaTabuleiro extends JFrame {
     }
  
     private void conectarComodos(ClueFacade facade) {
-        facade.conectarCasas("COMODO_Cozinha",           "L3C5");
-        facade.conectarCasas("COMODO_Cozinha",           "L4C5");
-        facade.conectarCasas("COMODO_Sala de Musica",    "L6C8");
-        facade.conectarCasas("COMODO_Sala de Musica",    "L6C15");
-        facade.conectarCasas("COMODO_Jardim de Inverno", "L3C18");
+        // Cozinha
+        facade.conectarCasas("COMODO_Cozinha", "L6C4");
+
+        // Sala de Musica
+        facade.conectarCasas("COMODO_Sala de Musica", "L4C16");
+        facade.conectarCasas("COMODO_Sala de Musica", "L7C14");
+        facade.conectarCasas("COMODO_Sala de Musica", "L7C9");
+        facade.conectarCasas("COMODO_Sala de Musica", "L4C7");
+
+        // Jardim de Inverno
         facade.conectarCasas("COMODO_Jardim de Inverno", "L4C18");
-        facade.conectarCasas("COMODO_Sala de Jantar",    "L7C0"); 
-        facade.conectarCasas("COMODO_Salao de Jogos",    "L8C17"); 
-        facade.conectarCasas("COMODO_Biblioteca",        "L17C16"); 
-        facade.conectarCasas("COMODO_Sala de Estar",     "L19C6");
-        facade.conectarCasas("COMODO_Entrada",           "L18C11");
-        facade.conectarCasas("COMODO_Entrada",           "L18C12");
-        facade.conectarCasas("COMODO_Entrada",           "L21C15"); 
-        facade.conectarCasas("COMODO_Escritorio",        "L21C18");
+
+        // Sala de Jantar
+        facade.conectarCasas("COMODO_Sala de Jantar", "L11C8");
+        facade.conectarCasas("COMODO_Sala de Jantar", "L15C16");
+        facade.conectarCasas("COMODO_Sala de Jantar", "L15C6");
+
+        // Salao de Jogos
+        facade.conectarCasas("COMODO_Salao de Jogos", "L8C17");
+        facade.conectarCasas("COMODO_Salao de Jogos", "L12C22");
+
+        // Biblioteca
+        facade.conectarCasas("COMODO_Biblioteca", "L12C20");
+
+        // Sala de Estar
+        facade.conectarCasas("COMODO_Sala de Estar", "L17C6");
+
+        // Entrada
+        facade.conectarCasas("COMODO_Entrada", "L16C11");
+        facade.conectarCasas("COMODO_Entrada", "L16C12");
+
+        // Escritorio
+        facade.conectarCasas("COMODO_Escritorio", "L19C17");
     }
  
     private void adicionarPassagensSecretas(ClueFacade facade) {

@@ -23,6 +23,8 @@ public class ClueModel {
     private Tabuleiro tabuleiro;
     private int indiceJogadorAtual;
     private List<String> ultimasCasasMapeadas;
+    private String cartaRefutada;
+    private String jogadorQueRefutou;
  
     public ClueModel() {
         this.envelopeConfidencial = new ArrayList<Carta>();
@@ -32,6 +34,8 @@ public class ClueModel {
         this.tabuleiro = new Tabuleiro();
         this.indiceJogadorAtual = 0;
         this.ultimasCasasMapeadas = new ArrayList<String>();
+        this.cartaRefutada = null;
+        this.jogadorQueRefutou = null;
     }
  
     private List<Carta> criarSuspeitos() {
@@ -443,33 +447,43 @@ public class ClueModel {
  
     public String realizarPalpite(String suspeito, String arma) {
         Jogador jogadorAtual = jogadoresEmOrdemDaEsquerda.get(indiceJogadorAtual);
- 
+
         if (!ehComodo(jogadorAtual.getCasaAtual())) {
             throw new IllegalArgumentException("O jogador precisa estar em um cômodo para dar palpite.");
         }
- 
+
         String comodo = removerPrefixoComodo(jogadorAtual.getCasaAtual().getNome());
- 
+
         Jogador suspeitoComoJogador = jogadoresPorNome.get(suspeito);
- 
-        if (suspeitoComoJogador != null) {
+
+        if (suspeitoComoJogador != null && !suspeitoComoJogador.estaEliminado()) {
             moverJogadorParaCasa(suspeitoComoJogador, jogadorAtual.getCasaAtual());
         }
- 
+
         String[] cartasDoPalpite = { suspeito, arma, comodo };
- 
+
+        cartaRefutada = null;
+        jogadorQueRefutou = null;
+
         for (int deslocamento = 1; deslocamento < jogadoresEmOrdemDaEsquerda.size(); deslocamento++) {
             int indice = (indiceJogadorAtual + deslocamento) % jogadoresEmOrdemDaEsquerda.size();
- 
+
             Jogador jogador = jogadoresEmOrdemDaEsquerda.get(indice);
- 
+
+            if (jogador.estaEliminado()) {
+                continue;
+            }
+
             for (String cartaPalpite : cartasDoPalpite) {
                 if (jogador.possuiCarta(cartaPalpite)) {
+                    cartaRefutada = cartaPalpite;
+                    jogadorQueRefutou = jogador.getNome();
+
                     return jogador.getNome() + " pode mostrar uma carta.";
                 }
             }
         }
- 
+
         return "Nenhum jogador conseguiu refutar o palpite.";
     }
  
@@ -903,5 +917,18 @@ public class ClueModel {
             if (!j.estaEliminado()) return j.getNome();
         }
         return null;
+    }
+    
+    public boolean jogadorEstaAtivo(String nome) {
+        Jogador jogador = jogadoresPorNome.get(nome);
+
+        return jogador != null && !jogador.estaEliminado();
+    }
+    public String getCartaRefutada() {
+        return cartaRefutada;
+    }
+
+    public String getJogadorQueRefutou() {
+        return jogadorQueRefutou;
     }
 }

@@ -33,7 +33,6 @@ public class PainelLateral extends JPanel {
     private JButton botaoPalpite;
     private JButton botaoAcusar;
     private JButton botaoSalvarJogo;
-    private JButton botaoCarregarJogo;
     private JButton botaoJogarDados;
     private JButton botaoEscolherDados;
  
@@ -77,7 +76,6 @@ public class PainelLateral extends JPanel {
         botaoPalpite = new JButton("Palpite");
         botaoAcusar = new JButton("Acusar");
         botaoSalvarJogo = new JButton("Salvar Jogo");
-        botaoCarregarJogo = new JButton("Carregar Jogo");
         botaoJogarDados = new JButton("Jogar Dados");
         botaoEscolherDados = new JButton("Escolher Dados");
  
@@ -97,7 +95,7 @@ public class PainelLateral extends JPanel {
         botaoAcusar.setBounds(20, 245, 180, 35);
         botaoSalvarJogo.setBounds(20, 300, 180, 35);
  
-        botaoCarregarJogo.setBounds(20, 355, 180, 35);
+
  
         botaoJogarDados.setBounds(20, 590, 180, 35);
         botaoEscolherDados.setBounds(20, 635, 180, 35);
@@ -109,7 +107,6 @@ public class PainelLateral extends JPanel {
         add(botaoPalpite);
         add(botaoAcusar);
         add(botaoSalvarJogo);
-        add(botaoCarregarJogo);
         add(botaoJogarDados);
         add(botaoEscolherDados);
     }
@@ -160,12 +157,6 @@ public class PainelLateral extends JPanel {
         botaoBlocoNotas.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 abrirBlocoNotas();
-            }
-        });
- 
-        botaoCarregarJogo.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ClueController.getInstancia().onCarregarJogo(PainelLateral.this);
             }
         });
  

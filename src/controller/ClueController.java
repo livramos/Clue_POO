@@ -11,6 +11,15 @@ import view.JanelaAcusacao;
 import view.JanelaPalpite;
 import view.PainelLateral;
 import view.PainelTabuleiro;
+import java.awt.Component;
+import java.io.File;
+import java.io.IOException;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import view.JanelaTabuleiro;
  
 public class ClueController {
  
@@ -99,7 +108,9 @@ public class ClueController {
                 painelTabuleiro.limparDestaques();
             }
  
-            if (destino.startsWith("COMODO_")) {
+            String casaFinal = facade.getCasaAtualDoJogador();
+
+            if (casaFinal != null && casaFinal.startsWith("COMODO_")) {
                 estadoAtual = EstadoJogo.APOS_MOVIMENTO_COMODO;
             } else {
                 estadoAtual = EstadoJogo.APOS_MOVIMENTO_CORREDOR;
@@ -149,32 +160,44 @@ public class ClueController {
  
  
     /** Jogador quer carregar uma partida salva em arquivo .txt ASCII. */
-    public void onCarregarJogo(Component componentePai) {
+    /** Jogador quer carregar uma partida salva em arquivo .txt ASCII. */
+    public boolean onCarregarJogo(Component componentePai) {
         JFileChooser seletor = new JFileChooser();
         seletor.setDialogTitle("Carregar partida");
         seletor.setFileFilter(new FileNameExtensionFilter("Arquivo texto (*.txt)", "txt"));
- 
+
         int resposta = seletor.showOpenDialog(componentePai);
         if (resposta != JFileChooser.APPROVE_OPTION) {
-            return;
+            return false;
         }
- 
+
         File arquivo = seletor.getSelectedFile();
- 
+
         try {
             facade.carregarJogo(arquivo);
- 
+
+            // Se o jogo foi carregado a partir do menu inicial,
+            // ainda não existe tabuleiro aberto.
+            if (painelTabuleiro == null) {
+                JanelaTabuleiro janelaTabuleiro = new JanelaTabuleiro();
+                janelaTabuleiro.setVisible(true);
+            }
+
             if (painelTabuleiro != null) {
                 painelTabuleiro.limparDestaques();
             }
+
             iniciarTurno();
- 
+
             JOptionPane.showMessageDialog(
                     componentePai,
                     "Partida carregada com sucesso.",
                     "Carregar partida",
                     JOptionPane.INFORMATION_MESSAGE
             );
+
+            return true;
+
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(
                     componentePai,
@@ -182,6 +205,8 @@ public class ClueController {
                     "Erro ao carregar partida",
                     JOptionPane.ERROR_MESSAGE
             );
+            return false;
+
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(
                     componentePai,
@@ -189,6 +214,7 @@ public class ClueController {
                     "Erro ao carregar partida",
                     JOptionPane.ERROR_MESSAGE
             );
+            return false;
         }
     }
  
